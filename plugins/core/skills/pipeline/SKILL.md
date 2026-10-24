@@ -41,6 +41,17 @@ a oznám ho jednou vetou, aby ho používateľ mohol zmeniť:
   chyby, slepá ulička), navrhni `/poucenia`. Nespúšťaj ho sám.
 
 Agenti sú z pluginu core; v zozname agentov môžu byť s predponou (`core:code-explorer`).
+
+**Projektoví agenti majú prednosť.** Ak projekt má v `.claude/agents/` vlastného agenta s rovnakou
+rolou, použi jeho namiesto agenta z pluginu – je šitý na mieru projektu. Rolu posúď podľa popisu, napr.:
+
+| Rola | Plugin core | Typický projektový ekvivalent |
+|------|-------------|-------------------------------|
+| prieskum / hľadanie v kóde | `code-explorer` | `hladac-kodu` |
+| plán / architektúra | `planner` | `architekt` |
+| implementácia | `tdd-guide` | `implementer` |
+
+Fázy, brány a TDD poradie z tohto skillu platia ďalej; mení sa len to, kto fázu vykoná.
 Pri drobných zmenách agentov nespúšťaj – urob fázu priamo, je to rýchlejšie a lacnejšie.
 
 ## Dve brány
