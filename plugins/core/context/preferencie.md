@@ -11,6 +11,8 @@
   - nová funkcia → `add-feature`
   - funguje, ale má sa správať inak → `change-feature`
   - rovnaké správanie, lepšia štruktúra → `refactor`
+- Na samostatné „sprav code review“ / „skontroluj kód“ použi vstavaný `/code-review`.
+  Agent `code-reviewer` je na review vnútri pracovných postupov.
 - Veľkosť procesu prispôsob veľkosti zmeny – drobnosť nepotrebuje plán ani agentov.
 - Pred tvrdením „hotovo“ over výsledok (spusti testy, skript, otvor stránku). Ak niečo nebolo overené, povedz to.
 - Pred commitom ukáž zhrnutie zmien a počkaj na potvrdenie.
