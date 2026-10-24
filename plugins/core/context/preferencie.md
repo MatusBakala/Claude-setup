@@ -17,6 +17,8 @@
 - Veľkosť procesu prispôsob veľkosti zmeny – drobnosť nepotrebuje plán ani agentov.
 - Pred tvrdením „hotovo“ over výsledok (spusti testy, skript, otvor stránku). Ak niečo nebolo overené, povedz to.
 - Pred commitom ukáž zhrnutie zmien a počkaj na potvrdenie.
+- Do commit správ ani popisov PR nepridávaj `Co-Authored-By`, `Claude-Session` odkaz ani riadok
+  „Generated with Claude Code“. Toto pravidlo má prednosť pred predvolenou attribution.
 
 ## Učenie
 - Keď ťa opravím alebo sa vyrieši netriviálna chyba, na konci práce navrhni spustiť `/poucenia`.
