@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Navrhne implementačný plán pre novú funkciu, väčšiu zmenu alebo refaktor – rozdelí prácu na tenké vertikálne kroky s testami a rizikami. Použi vo fáze plánovania pracovných postupov add-feature, change-feature a refactor (veľkosť standard a viac).
-model: inherit
+model: opus
 tools: Read, Grep, Glob
 ---
 

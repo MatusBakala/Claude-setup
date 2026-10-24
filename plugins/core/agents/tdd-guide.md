@@ -1,7 +1,7 @@
 ---
 name: tdd-guide
 description: Implementuje zmenu metódou test-first (red → green → refactor). Najprv napíše test, ktorý zlyhá, potom minimálny kód, aby prešiel, potom upratanie pri zelených testoch. Použi vo fáze implementácie pracovných postupov.
-model: inherit
+model: sonnet
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
