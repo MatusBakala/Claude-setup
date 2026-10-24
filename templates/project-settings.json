@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "matus": {
+      "source": {
+        "source": "github",
+        "repo": "MatusBakala/claude-setup"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "core@matus": true
+  }
+}

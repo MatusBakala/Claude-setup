@@ -1,0 +1,16 @@
+{
+  "name": "matus",
+  "owner": {
+    "name": "Matúš Bakala"
+  },
+  "metadata": {
+    "description": "Osobné univerzálne prostredie pre Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "core",
+      "source": "./plugins/core",
+      "description": "Pracovné postupy (oprava chyby, nová funkcia, zmena, refaktor), TDD, agenti s úzkou rolou, preferencie a učenie z chýb (inštinkty)."
+    }
+  ]
+}
