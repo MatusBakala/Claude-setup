@@ -42,13 +42,21 @@ Platí potom pre všetky projekty. Aktualizácia po zmene v repe:
 
 ### V cloude (claude.ai/code)
 
-Cloud session začína s prázdnym `~/.claude`, preto treba plugin nahlásiť v projekte.
-Skopíruj `templates/project-settings.json` do projektu ako `.claude/settings.json`
-(alebo jeho obsah zlúč s existujúcim) a commitni. Každá nová cloud session v tom projekte si plugin načíta sama.
+Cloud session pluginy deklarované v `.claude/settings.json` repa **neinštaluje**
+(pozri dokumentáciu „What carries over from your setup“). Plugin preto nainštaluje
+**setup script prostredia** – raz pre prostredie, platí pre každú session a každý projekt v ňom:
 
-Ak je toto repo **súkromné**, cloud session ho stiahne len vtedy, keď má k nemu prístup
-(GitHub App nainštalovaná aj na `claude-setup`). Najjednoduchšie je nechať ho verejné –
-nie sú v ňom žiadne tajomstvá, len postupy a pravidlá.
+1. claude.ai/code → menu prostredia → **Edit**.
+2. **Setup script**:
+   ```bash
+   #!/bin/bash
+   claude plugin marketplace add MatusBakala/Claude-setup && claude plugin install core@matus
+   ```
+3. Ak je repo súkromné, pridaj `MatusBakala/Claude-setup` aj do **Repositories** toho prostredia,
+   inak ho setup script nestiahne.
+
+`templates/project-settings.json` sa hodí len pre lokálne projekty, kde chceš, aby Claude Code
+ponúkol inštaláciu pluginu aj niekomu inému, kto repo naklonuje.
 
 ## Úpravy
 
