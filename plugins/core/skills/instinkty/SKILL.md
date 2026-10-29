@@ -37,7 +37,12 @@ a `.claude/instincts/` (v aktuálnom projekte) – CLI ich nevidí.
 - **Konfigurácia:** `<plugin>/learning/config.json` (`enabled`, `run_interval_minutes`, `min_observations_to_analyze`).
   Lokálny override bez zmeny pluginu: `~/.local/share/ecc-homunculus/config.json`.
 - **Dočasne vypnúť všetko pozorovanie:** `touch ~/.local/share/ecc-homunculus/disabled` (zapnúť: zmaž súbor).
-- **Model:** premenná `ECC_OBSERVER_MODEL` (predvolene `haiku`).
+- **Model:** premenná `ECC_OBSERVER_MODEL` (predvolene `haiku`); úsilie `ECC_OBSERVER_EFFORT`
+  (predvolene `low`, aby observer nededil effort a thinking session); limit rozboru
+  `ECC_OBSERVER_TIMEOUT_SECONDS` (predvolene 300 s).
+- **Vstupy:** volania nástrojov aj správy používateľa (`user_prompt`, jedna jasná oprava stačí na
+  inštinkt) a zoznam schválených inštinktov (globálne v plugine + `<projekt>/.claude/instincts/`),
+  ktoré observer nesmie navrhnúť znova.
 - **Aktívne hodiny:** `OBSERVER_ACTIVE_HOURS_START` / `_END` (predvolene 800 / 2300).
 - **Dáta:** `${XDG_DATA_HOME:-~/.local/share}/ecc-homunculus/` (`CLV2_HOMUNCULUS_DIR` ho prepíše).
   Projekty sú v `projects/<hash>/` s `observations.jsonl`, `instincts/personal/` a logom observera.

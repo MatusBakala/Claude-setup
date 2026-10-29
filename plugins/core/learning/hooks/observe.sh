@@ -23,6 +23,7 @@ if [ -z "$HOOK_PHASE" ]; then
   case "${CLAUDE_HOOK_EVENT_NAME:-}" in
     PreToolUse|pretooluse|pre_tool_use|pre) HOOK_PHASE="pre" ;;
     PostToolUse|posttooluse|post_tool_use|post) HOOK_PHASE="post" ;;
+    UserPromptSubmit|userpromptsubmit|user_prompt_submit|prompt) HOOK_PHASE="prompt" ;;
     *) HOOK_PHASE="post" ;;
   esac
 fi
@@ -222,11 +223,21 @@ try:
     # Claude Code does NOT include a "hook_type" field in the stdin JSON,
     # so we rely on the shell argument ("pre" or "post") instead.
     hook_phase = os.environ.get("HOOK_PHASE", "post")
-    event = "tool_start" if hook_phase == "pre" else "tool_complete"
+    if hook_phase == "prompt":
+        event = "user_prompt"
+    elif hook_phase == "pre":
+        event = "tool_start"
+    else:
+        event = "tool_complete"
 
     # Extract fields - Claude Code hook format
     tool_name = data.get("tool_name", data.get("tool", "unknown"))
     tool_input = data.get("tool_input", data.get("input", {}))
+    # claude-setup: the message the user typed (UserPromptSubmit) is the best
+    # source of corrections, so it is recorded like a tool input.
+    if event == "user_prompt":
+        tool_name = "user_prompt"
+        tool_input = data.get("prompt", "")
     tool_output = data.get("tool_response")
     if tool_output is None:
         tool_output = data.get("tool_output", data.get("output", ""))
@@ -249,7 +260,7 @@ try:
         "parsed": True,
         "event": event,
         "tool": tool_name,
-        "input": tool_input_str if event == "tool_start" else None,
+        "input": tool_input_str if event in ("tool_start", "user_prompt") else None,
         "output": tool_response_str if event == "tool_complete" else None,
         "session": session_id,
         "tool_use_id": tool_use_id,

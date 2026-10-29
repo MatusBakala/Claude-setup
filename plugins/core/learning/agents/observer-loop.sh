@@ -195,6 +195,26 @@ wait_for_claude_analysis() {
   done
 }
 
+# claude-setup: one line "- <id>: <trigger>" per approved instinct (plugin
+# instincts/ = global, <project root>/.claude/instincts/ = project).
+list_approved_instincts() {
+  local plugin_instincts_dir project_root approved_dir approved_file found_any=0
+  plugin_instincts_dir="$(cd "${SCRIPT_DIR}/../.." 2>/dev/null && pwd)/instincts"
+  project_root="$(sed -n 's/.*"root": *"\([^"]*\)".*/\1/p' "${PROJECT_DIR}/project.json" 2>/dev/null | head -n 1)"
+  for approved_dir in "$plugin_instincts_dir" "${project_root:+${project_root}/.claude/instincts}"; do
+    [ -n "$approved_dir" ] && [ -d "$approved_dir" ] || continue
+    for approved_file in "$approved_dir"/*.md; do
+      [ -f "$approved_file" ] || continue
+      [ "$(basename "$approved_file")" = "README.md" ] && continue
+      printf -- '- %s: %s\n' \
+        "$(sed -n 's/^id: *//p' "$approved_file" | head -n 1)" \
+        "$(sed -n 's/^trigger: *//p' "$approved_file" | head -n 1)"
+      found_any=1
+    done
+  done
+  [ "$found_any" -eq 1 ] || echo "- (none)"
+}
+
 analyze_observations() {
   if [ ! -f "$OBSERVATIONS_FILE" ]; then
     return
@@ -265,10 +285,17 @@ analyze_observations() {
     return
   fi
   ACTIVE_PROMPT_FILE="$prompt_file"
+  # claude-setup: the observer must not propose rules the user already approved
+  # (global ones in the plugin, project ones in <project root>/.claude/instincts).
+  approved_instincts_summary="$(list_approved_instincts)"
   cat > "$prompt_file" <<PROMPT
 IMPORTANT: You are running in non-interactive --print mode. You MUST use the Write tool directly to create files. Do NOT ask for permission, do NOT ask for confirmation, do NOT output summaries instead of writing. Just read, analyze, and write.
 
 Read ${analysis_relpath} and identify patterns for the project ${PROJECT_NAME} (user corrections, error resolutions, repeated workflows, tool preferences).
+Events with "event":"user_prompt" are the user's own messages. A user correction there ("no, do X instead", "why did you…", "remember this") is the strongest signal: one clear correction is enough for an instinct (confidence 0.5), it does not need 3 occurrences.
+
+These instincts are already approved by the user. Do NOT write an instinct that repeats or only rephrases one of them; skip such patterns entirely:
+${approved_instincts_summary}
 If you find 3+ occurrences of the same pattern, you MUST write an instinct file directly to ${INSTINCTS_DIR}/<id>.md using the Write tool.
 Do NOT ask for permission to write files, do NOT describe what you would write, and do NOT stop at analysis when a qualifying pattern exists.
 
@@ -296,7 +323,7 @@ project_name: ${PROJECT_NAME}
 - Last observed: <date>
 
 Rules:
-- Be conservative, only clear patterns with 3+ observations
+- Be conservative, only clear patterns with 3+ observations (a single explicit user correction also qualifies, see above)
 - Use narrow, specific triggers
 - Never include actual code snippets, only describe patterns
 - When a qualifying pattern exists, write or update the instinct file in this run instead of asking for confirmation
@@ -327,7 +354,9 @@ PROMPT
     return
   fi
 
-  timeout_seconds="${ECC_OBSERVER_TIMEOUT_SECONDS:-120}"
+  # claude-setup: 300 s, because batches are larger now (20 min / 60 observations)
+  # and the 120 s default cut a 134-line analysis short on 28.10.2026.
+  timeout_seconds="${ECC_OBSERVER_TIMEOUT_SECONDS:-300}"
   # Auto-scale max_turns proportional to analysis batch size when not explicitly set.
   # The old hardcoded default of 20 is insufficient for the 500-line MAX_ANALYSIS_LINES
   # default: Claude hits --max-turns before it can write all discovered instinct files.
@@ -396,7 +425,10 @@ PROMPT
   # Bash, including macOS's Bash 3.2 and Git Bash. That lets timeout/signal
   # cleanup terminate tool subprocesses as well as the direct CLI process.
   set -m
-  ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model "${ECC_OBSERVER_MODEL:-haiku}" --max-turns "$max_turns" --print \
+  # claude-setup: effort is set explicitly (ECC_OBSERVER_EFFORT, default low) so the
+  # observer does not inherit the session's effort and thinking budget; spotting
+  # patterns in a log needs little reasoning, and long thinking only risks the timeout.
+  ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model "${ECC_OBSERVER_MODEL:-haiku}" --effort "${ECC_OBSERVER_EFFORT:-low}" --max-turns "$max_turns" --print \
     --allowedTools "Read,Write" \
     -p "$prompt_content" < /dev/null >&8 2>> "$LOG_FILE" &
   CLAUDE_PID=$!

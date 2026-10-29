@@ -17,7 +17,8 @@ Postavené na vzoroch z [ECC](https://github.com/affaan-m/ECC) (MIT), zúžené 
 ## Ako funguje učenie
 
 ```
-práca → hooky zapisujú volania nástrojov → observer (Haiku, max 1× za 5 min, 8:00–23:00)
+práca → hooky zapisujú volania nástrojov aj tvoje správy → observer (Haiku, effort low, max 1× za 20 min
+      od 60 zápisov, 8:00–23:00; vidí schválené inštinkty, aby ich nenavrhoval znova)
       → automatické inštinkty (lokálne, ~/.local/share/ecc-homunculus)
       → /poucenia: schváliť / upraviť / zamietnuť
       → schválené: projektové → <projekt>/.claude/instincts/   globálne → plugins/core/instincts/ (toto repo)
