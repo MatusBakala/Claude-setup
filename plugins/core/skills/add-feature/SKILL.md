@@ -1,6 +1,6 @@
 ---
 name: add-feature
-description: Nová funkcia od začiatku do konca – prieskum, plán na schválenie, implementácia cez testy, review a commit po potvrdení. Použi, keď používateľ chce schopnosť, ktorá ešte neexistuje („pridaj“, „sprav“, „implementuj“, „chcem aby to vedelo“, „nová stránka / tlačidlo / report“).
+description: Nová funkcia od začiatku do konca – prieskum, plán na schválenie, implementácia cez testy, review a commit po overení. Použi, keď používateľ chce schopnosť, ktorá ešte neexistuje („pridaj“, „sprav“, „implementuj“, „chcem aby to vedelo“, „nová stránka / tlačidlo / report“).
 ---
 
 # add-feature
@@ -26,7 +26,7 @@ Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-add-fe
 3. Plán (`planner`) → **BRÁNA 1**.
 4. Každý krok plánu cez `tdd-guide` (red → green → refactor).
 5. Review (`code-reviewer`, pri bezpečnostnom spúšťači aj `security-reviewer`).
-6. Overenie v reálnej aplikácii → **BRÁNA 2** – commit `feat: ...` po potvrdení.
+6. Overenie v reálnej aplikácii → **BRÁNA 2** – commit `feat: ...` a push po overení.
 
 Ak funkcia mení formát uložených dát (napr. IndexedDB schéma), plán musí obsahovať migráciu
 existujúcich dát a test, že staré dáta po migrácii fungujú.

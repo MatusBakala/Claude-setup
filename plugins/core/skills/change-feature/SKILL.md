@@ -1,6 +1,6 @@
 ---
 name: change-feature
-description: Zmena existujúcej funkčnej vlastnosti na nové požadované správanie – najprv upraviť testy na novú špecifikáciu, potom kód, review a commit po potvrdení. Použi, keď to nie je pokazené, ale má sa to správať inak („zmeň“, „uprav“, „namiesto X nech robí Y“, „nech to ešte aj…“).
+description: Zmena existujúcej funkčnej vlastnosti na nové požadované správanie – najprv upraviť testy na novú špecifikáciu, potom kód, review a commit po overení. Použi, keď to nie je pokazené, ale má sa to správať inak („zmeň“, „uprav“, „namiesto X nech robí Y“, „nech to ešte aj…“).
 ---
 
 # change-feature

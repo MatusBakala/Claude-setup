@@ -1,6 +1,6 @@
 ---
 name: fix-bug
-description: Oprava chyby – reprodukovať ju testom, ktorý zlyhá, opraviť do zelena, review a commit po potvrdení. Použi vždy, keď je niečo pokazené – zlý výsledok, chyba v konzole, pád, regresia („nefunguje“, „hádže chybu“, „zle počíta“, „bug“, „fix“).
+description: Oprava chyby – reprodukovať ju testom, ktorý zlyhá, opraviť do zelena, review a commit po overení. Použi vždy, keď je niečo pokazené – zlý výsledok, chyba v konzole, pád, regresia („nefunguje“, „hádže chybu“, „zle počíta“, „bug“, „fix“).
 ---
 
 # fix-bug
@@ -28,7 +28,7 @@ Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-fix-de
    kde sa prejaví. Skontroluj, či rovnaká chyba nie je aj na iných miestach.
 3. Regresný test (RED) → oprava (GREEN) → upratanie.
 4. Review (`code-reviewer`, pri bezpečnostnom spúšťači aj `security-reviewer`).
-5. Over v reálnej aplikácii, ak sa dá. **BRÁNA 2** – commit `fix: ...` po potvrdení.
+5. Over v reálnej aplikácii, ak sa dá. **BRÁNA 2** – commit `fix: ...` a push po overení.
 6. Ak bola príčina netriviálna, navrhni `/poucenia`.
 
 Ak test reprodukovať nejde (napr. čisto vizuálna chyba), povedz to a over ručne / screenshotom.

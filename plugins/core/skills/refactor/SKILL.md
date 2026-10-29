@@ -1,6 +1,6 @@
 ---
 name: refactor
-description: Refaktor bez zmeny správania – overiť zelené testy, preštruktúrovať po malých krokoch, testy stále zelené, review a commit po potvrdení. Použi, keď sa má zlepšiť štruktúra, ale správanie sa meniť nesmie („uprac“, „rozdeľ súbor“, „odstráň duplicitu“, „mŕtvy kód“, „refaktor“).
+description: Refaktor bez zmeny správania – overiť zelené testy, preštruktúrovať po malých krokoch, testy stále zelené, review a commit po overení. Použi, keď sa má zlepšiť štruktúra, ale správanie sa meniť nesmie („uprac“, „rozdeľ súbor“, „odstráň duplicitu“, „mŕtvy kód“, „refaktor“).
 ---
 
 # refactor
@@ -27,4 +27,4 @@ Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-refine
 3. Malé kroky, po každom spusti testy. Žiadne „popri tom opravím aj…“ – chyby nájdené počas
    refaktoru zapíš a rieš zvlášť cez `fix-bug`.
 4. Review (`code-reviewer`) so zameraním na to, že diff je behaviorálne neutrálny.
-5. **BRÁNA 2** – commit `refactor: ...` po potvrdení.
+5. **BRÁNA 2** – commit `refactor: ...` a push po overení.

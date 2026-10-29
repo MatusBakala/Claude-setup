@@ -61,11 +61,11 @@ Až schválením sa stanú trvalými a platia všade.
    ```
 
    - **Projekt:** zapíš do `<koreň projektu>/.claude/instincts/`. Commit spolu s ostatnými zmenami
-     alebo samostatne (`chore: add learned instincts`) – podľa brány 2, po potvrdení.
+     alebo samostatne (`chore: add learned instincts`) – podľa brány 2, hneď po schválení inštinktov.
    - **Globálne:** potrebuješ lokálnu kópiu repa `claude-setup`:
      1. Hľadaj v tomto poradí: `$CORE_SETUP_REPO`, `~/claude-setup`, `~/code/claude-setup`, `~/Projects/claude-setup`.
      2. Ak nie je, `git clone https://github.com/MatusBakala/claude-setup.git ~/claude-setup`.
-     3. Zapíš do `plugins/core/instincts/<id>.md`, ukáž diff, po potvrdení commit
+     3. Zapíš do `plugins/core/instincts/<id>.md`, commitni hneď po schválení
         (`chore(instincts): add <id>`) a push.
      4. Ak klon alebo push nejde (napr. cloud session bez prístupu k repu), ulož súbor dočasne
         do projektu ako `.claude/instincts/<id>.md` so `scope: global` a povedz používateľovi,

@@ -1,6 +1,6 @@
 ---
 name: pipeline
-description: Spoločná kostra pracovných postupov fix-bug, add-feature, change-feature a refactor – určenie veľkosti zmeny, fázy (prieskum, plán, TDD, review, commit), mapa agentov a dve brány (schválenie plánu, potvrdenie commitu). Načítaj ju vždy, keď beží niektorý z týchto postupov.
+description: Spoločná kostra pracovných postupov fix-bug, add-feature, change-feature a refactor – určenie veľkosti zmeny, fázy (prieskum, plán, TDD, review, commit), mapa agentov a dve brány (schválenie plánu, commit po overení). Načítaj ju vždy, keď beží niektorý z týchto postupov.
 ---
 
 # Pipeline – spoločná kostra pracovných postupov
@@ -59,8 +59,8 @@ Pri drobných zmenách agentov nespúšťaj – urob fázu priamo, je to rýchle
 Postup je **riadený, nie autonómny**:
 
 1. **BRÁNA 1 – po pláne.** Ukáž plán a nepíš implementáciu, kým ho používateľ neschváli.
-2. **BRÁNA 2 – pred commitom.** Ukáž zhrnutie diffu, výsledok overenia a návrh správy.
-   Necommituj, kým používateľ nepotvrdí.
+2. **BRÁNA 2 – commit po overení.** Keď sú testy zelené a review bez blokujúcich nálezov,
+   commitni a pushni bez čakania na potvrdenie; potom ukáž zhrnutie diffu a výsledok overenia.
 
 Medzi bránami pracuj bez zastavovania. Ak si používateľ výslovne vypýta „sprav to celé bez pýtania“,
 brány preskoč a na konci podaj súhrn.
