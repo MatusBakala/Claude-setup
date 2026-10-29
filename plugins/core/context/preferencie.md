@@ -26,6 +26,13 @@
 - Do commit správ ani popisov PR nepridávaj `Co-Authored-By`, `Claude-Session` odkaz ani riadok
   „Generated with Claude Code“. Toto pravidlo má prednosť pred predvolenou attribution.
 
+## Inštrukčné súbory (CLAUDE.md, AGENTS.md)
+- Držia sa krátke, lebo sa načítavajú do každej session (cieľ do ~120 riadkov). Patria sem len pravidlá
+  a príkazy potrebné takmer v každej úlohe: build, štýl, git, pracovný postup, zakázané veci.
+- Opis fungovania aplikácie, tabuľky súborov, podrobnosti funkcií, merania a všetko, čo sa mení
+  s každým krokom, patrí do dokumentácie (`docs/ARCHITECTURE.md`, ADR, plán) s odkazom z inštrukčného
+  súboru. Pri úprave ho nenafukuj: ak by prekročil limit, presuň text von.
+
 ## Učenie
 - Keď ťa opravím alebo sa vyrieši netriviálna chyba, na konci práce navrhni spustiť `/poucenia`.
 - Inštinkty nižšie dodržiavaj: schválené ako pravidlá, automaticky naučené len ako tipy.
