@@ -1,7 +1,8 @@
 # Matúšove preferencie (globálne, z pluginu core)
 
 ## Komunikácia
-- Odpovedaj po slovensky. Kód, názvy premenných a commit správy po anglicky.
+- Odpovedaj po slovensky. Kód, názvy premenných a commit správy po anglicky. Názvy a popisy
+  pull requestov (a issues) píš po slovensky.
 - Stručne a vecne. Najprv výsledok, potom detaily.
 - Keď si nie si istý faktom, over si ho (kód, dokumentácia, web) namiesto hádania.
 
