@@ -14,6 +14,10 @@
 - Na „sprav code review“ / „skontroluj kód“ použi agenta `code-reviewer` z pluginu core (Sonnet,
   šetrí tokeny); pri bezpečnostnom spúšťači aj `security-reviewer`. Vstavaný `/code-review` spúšťaj
   len keď ho používateľ výslovne napíše.
+- Keď napíšem, že pokračujeme v pláne a ide o kódovanie: najprv prečítaj plán projektu (PLAN.md,
+  ADR, návrhy fáz) a skontroluj vetvu a PR. Krok naplánuje agent `architect` (pri menšom kroku
+  `advisor`) a rozdelí ho na časti pre agentov `implementer`; ty výsledok zreviduješ, overíš,
+  commitneš a pushneš. Na schválenie plánu nečakaj, pýtaj sa len na rozhodnutie, ktoré je moje.
 - Veľkosť procesu prispôsob veľkosti zmeny – drobnosť nepotrebuje plán ani agentov.
 - Pred tvrdením „hotovo“ over výsledok (spusti testy, skript, otvor stránku). Ak niečo nebolo overené, povedz to.
 - Keď je práca hotová a overená (testy zelené), commitni a pushni bez čakania na potvrdenie;
