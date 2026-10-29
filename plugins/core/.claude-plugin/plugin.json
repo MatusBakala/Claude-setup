@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Matúšovo univerzálne prostredie: pracovné postupy s bránami, TDD, agenti (prieskum, plán, testy, review, bezpečnosť, build), preferencie a učenie z chýb cez inštinkty. Postavené na vzoroch z ECC (MIT).",
   "author": {
     "name": "Matúš Bakala"
