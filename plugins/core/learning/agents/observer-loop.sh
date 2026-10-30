@@ -258,13 +258,15 @@ analyze_observations() {
   fi
   ACTIVE_ANALYSIS_FILE="$analysis_file"
 
-  if ! tail -n "$MAX_ANALYSIS_LINES" "$OBSERVATIONS_FILE" > "$analysis_file"; then
+  # claude-setup: analyze the OLDEST lines and archive only those after success, so a busy
+  # interval never drops unanalyzed observations (upstream sampled the tail, archived all).
+  if ! head -n "$MAX_ANALYSIS_LINES" "$OBSERVATIONS_FILE" > "$analysis_file"; then
     echo "[$(date)] Failed to snapshot observations; retaining them for retry" >> "$LOG_FILE"
     cleanup_analysis_resources
     return
   fi
   analysis_count=$(wc -l < "$analysis_file" 2>/dev/null || echo 0)
-  echo "[$(date)] Using last $analysis_count of $obs_count observations for analysis" >> "$LOG_FILE"
+  echo "[$(date)] Using oldest $analysis_count of $obs_count observations for analysis" >> "$LOG_FILE"
 
   # Claude Code resolves relative paths against the user's home directory on
   # macOS/Linux, even though the observer changes to PROJECT_DIR first. Use
@@ -495,11 +497,37 @@ PROMPT
   # Archive observations only after process success and the current analysis
   # result's exact completion record. A semantic failure can still exit zero,
   # so exit status alone must not discard the only live copy (#2370, #2673).
-  if [ -f "$OBSERVATIONS_FILE" ]; then
-    archive_dir="${PROJECT_DIR}/observations.archive"
-    mkdir -p "$archive_dir"
-    mv "$OBSERVATIONS_FILE" "$archive_dir/processed-$(date +%Y%m%d-%H%M%S)-$$.jsonl" 2>/dev/null || true
+  archive_analyzed_observations "$analysis_count"
+}
+
+# claude-setup: move the first $1 lines to the archive and put the rest back for the next run.
+# The live file is first moved aside atomically, so the hook keeps appending to a fresh file;
+# the remainder is then appended back with a single write.
+archive_analyzed_observations() {
+  analyzed="$1"
+  [ -f "$OBSERVATIONS_FILE" ] || return
+  archive_dir="${PROJECT_DIR}/observations.archive"
+  mkdir -p "$archive_dir"
+  processing="${OBSERVATIONS_FILE}.processing.$$"
+  mv "$OBSERVATIONS_FILE" "$processing" 2>/dev/null || return
+  head -n "$analyzed" "$processing" > "$archive_dir/processed-$(date +%Y%m%d-%H%M%S)-$$.jsonl" 2>/dev/null || true
+  remaining=$(( $(wc -l < "$processing" 2>/dev/null || echo 0) - analyzed ))
+  if [ "$remaining" -gt 0 ]; then
+    tail -n +"$((analyzed + 1))" "$processing" | "${CLV2_PYTHON_CMD:-python3}" -c '
+import os, sys
+data = sys.stdin.buffer.read()
+fd = os.open(sys.argv[1], os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
+try:
+    os.write(fd, data)
+finally:
+    os.close(fd)
+' "$OBSERVATIONS_FILE" 2>> "$LOG_FILE" || {
+      echo "[$(date)] Failed to restore $remaining unanalyzed observations; kept in $(basename "$processing")" >> "$LOG_FILE"
+      return
+    }
+    echo "[$(date)] Kept $remaining newer observations for the next run" >> "$LOG_FILE"
   fi
+  rm -f "$processing"
 }
 
 on_usr1() {

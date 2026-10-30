@@ -326,9 +326,6 @@ PROJECT_NAME="$_CLV2_PROJECT_NAME"
 PROJECT_ROOT="$_CLV2_PROJECT_ROOT"
 PROJECT_DIR="$_CLV2_PROJECT_DIR"
 
-if [ -n "$PROJECT_ROOT" ]; then
-  CLV2_OBSERVER_SENTINEL_FILE="${PROJECT_ROOT}/.observer.lock"
-else
-  CLV2_OBSERVER_SENTINEL_FILE="${PROJECT_DIR}/.observer.lock"
-fi
+# claude-setup: keep the pause sentinel in the observer's data dir, never in the user's repo.
+CLV2_OBSERVER_SENTINEL_FILE="${PROJECT_DIR}/.observer.lock"
 export CLV2_OBSERVER_SENTINEL_FILE

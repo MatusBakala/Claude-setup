@@ -205,7 +205,8 @@ MAX_FILE_SIZE_MB=10
 # Auto-purge observation files older than 30 days (runs once per session)
 PURGE_MARKER="${PROJECT_DIR}/.last-purge"
 if [ ! -f "$PURGE_MARKER" ] || [ "$(find "$PURGE_MARKER" -mtime +1 2>/dev/null)" ]; then
-  find "${PROJECT_DIR}" -name "observations-*.jsonl" -mtime +30 -delete 2>/dev/null || true
+  # claude-setup: also purge archives written by the observer after analysis (processed-*).
+  find "${PROJECT_DIR}" \( -name "observations-*.jsonl" -o -name "processed-*.jsonl" \) -mtime +30 -delete 2>/dev/null || true
   touch "$PURGE_MARKER" 2>/dev/null || true
 fi
 
@@ -290,6 +291,15 @@ _SECRET_RE = re.compile(
     r"([A-Za-z0-9_\-/.+=]{8,256})"
 )
 
+# claude-setup: bare credentials that carry no keyword (GitHub, Anthropic/OpenAI, AWS, Slack,
+# Google, JWT, PEM private keys - also when truncation cut off the END line).
+_TOKEN_RE = re.compile(
+    r"(?<![A-Za-z0-9])(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
+    r"|sk-[A-Za-z0-9_\-]{20,255}|(?:AKIA|ASIA)[0-9A-Z]{16}|xox[abposr]-[A-Za-z0-9\-]{10,255}"
+    r"|AIza[0-9A-Za-z_\-]{35}|eyJ[A-Za-z0-9_\-]{10,2000}\.eyJ[A-Za-z0-9_\-]{10,4000}\.[A-Za-z0-9_\-]{10,2000})"
+    r"|-----BEGIN [A-Z ]{0,40}PRIVATE KEY-----(?:[\s\S]{0,8000}?-----END [A-Z ]{0,40}PRIVATE KEY-----|[\s\S]{0,8000})"
+)
+
 import signal
 def _clv2_bail(*_):
     print("[observe] SIGALRM timeout: parse-error fallback observation dropped before write (#2300)", file=sys.stderr)
@@ -302,6 +312,7 @@ except Exception:
 
 raw = sys.stdin.read()[:2000]
 raw = _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", raw)
+raw = _TOKEN_RE.sub("[REDACTED]", raw)
 print(json.dumps({"timestamp": os.environ["TIMESTAMP"], "event": "parse_error", "raw": raw}))
 ' >> "$OBSERVATIONS_FILE"
   exit 0
@@ -361,10 +372,20 @@ _SECRET_RE = re.compile(
     r"([A-Za-z0-9_\-/.+=]{8,256})"
 )
 
+# claude-setup: bare credentials that carry no keyword (GitHub, Anthropic/OpenAI, AWS, Slack,
+# Google, JWT, PEM private keys - also when truncation cut off the END line).
+_TOKEN_RE = re.compile(
+    r"(?<![A-Za-z0-9])(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
+    r"|sk-[A-Za-z0-9_\-]{20,255}|(?:AKIA|ASIA)[0-9A-Z]{16}|xox[abposr]-[A-Za-z0-9\-]{10,255}"
+    r"|AIza[0-9A-Za-z_\-]{35}|eyJ[A-Za-z0-9_\-]{10,2000}\.eyJ[A-Za-z0-9_\-]{10,4000}\.[A-Za-z0-9_\-]{10,2000})"
+    r"|-----BEGIN [A-Z ]{0,40}PRIVATE KEY-----(?:[\s\S]{0,8000}?-----END [A-Z ]{0,40}PRIVATE KEY-----|[\s\S]{0,8000})"
+)
+
 def scrub(val):
     if val is None:
         return None
-    return _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", str(val))
+    val = _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", str(val))
+    return _TOKEN_RE.sub("[REDACTED]", val)
 
 if parsed["input"]:
     observation["input"] = scrub(parsed["input"])
