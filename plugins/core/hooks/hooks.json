@@ -8,6 +8,11 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/session-context.py\"",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/ensure-advisor.py\"",
+            "timeout": 5
           }
         ]
       }

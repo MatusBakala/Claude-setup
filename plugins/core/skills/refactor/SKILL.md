@@ -23,7 +23,7 @@ Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-refine
 ## Postup
 
 1. Zelené testy pred začiatkom (výstup ukáž).
-2. Plán (`planner`) → **BRÁNA 1**.
+2. Plán (`architect`) → **BRÁNA 1**.
 3. Malé kroky, po každom spusti testy. Žiadne „popri tom opravím aj…“ – chyby nájdené počas
    refaktoru zapíš a rieš zvlášť cez `fix-bug`.
 4. Review (`code-reviewer`) so zameraním na to, že diff je behaviorálne neutrálny.

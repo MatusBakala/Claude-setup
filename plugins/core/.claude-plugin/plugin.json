@@ -1,10 +1,16 @@
 {
   "name": "core",
-  "version": "0.1.11",
-  "description": "Matúšovo univerzálne prostredie: pracovné postupy s bránami, TDD, agenti (prieskum, plán, testy, review, bezpečnosť, build), preferencie a učenie z chýb cez inštinkty. Postavené na vzoroch z ECC (MIT).",
+  "version": "0.2.0",
+  "description": "Matúšovo univerzálne prostredie: orchestrátor deleguje na agentov s modelom a effortom podľa náročnosti (hľadač, architekt, implementer, review, bezpečnosť, build), pracovné postupy s bránami, TDD, vlny pre dlhé projekty, preferencie a učenie z chýb cez inštinkty. Postavené na vzoroch z ECC (MIT).",
   "author": {
     "name": "Matúš Bakala"
   },
   "license": "MIT",
-  "keywords": ["workflow", "tdd", "review", "learning", "instincts"]
+  "keywords": [
+    "workflow",
+    "tdd",
+    "review",
+    "learning",
+    "instincts"
+  ]
 }
