@@ -22,6 +22,6 @@ Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-change
 ## Postup
 
 1. Zhrň „predtým → potom“ jednou vetou pre každý dotknutý prípad.
-2. Nájdi existujúce testy a miesta, ktoré na starom správaní závisia (`code-explorer` pri väčšom zásahu).
+2. Nájdi existujúce testy a miesta, ktoré na starom správaní závisia (`hladac`, pri väčšom zásahu `code-explorer`).
 3. Plán len pri štandardnej a väčšej veľkosti → **BRÁNA 1** (stačí ukázať, ako sa zmenia testy).
-4. Testy → kód (`tdd-guide`) → review → overenie → **BRÁNA 2** – commit `feat:` alebo `refactor:` podľa povahy.
+4. Testy → kód (`implementer`) → review → overenie → **BRÁNA 2** – commit `feat:` alebo `refactor:` podľa povahy.

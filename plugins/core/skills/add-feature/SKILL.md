@@ -21,10 +21,10 @@ Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-add-fe
 ## Postup
 
 1. Ujasni si cieľ a kritériá hotovo. Nejasnosti zhrň do otázok – radšej jedna otázka navyše než zlá funkcia.
-2. Prieskum (`code-explorer`): kam to v kóde patrí, čo sa dá znovupoužiť. Krátko over,
+2. Prieskum (`hladac` na nájdenie miesta, `code-explorer` na tok): kam to v kóde patrí, čo sa dá znovupoužiť. Krátko over,
    či neexistuje hotové riešenie (natívne API prehliadača, štandardná knižnica, overená knižnica).
-3. Plán (`planner`) → **BRÁNA 1**.
-4. Každý krok plánu cez `tdd-guide` (red → green → refactor).
+3. Plán (`architect`) → **BRÁNA 1**.
+4. Každý krok plánu cez `implementer` (red → green → refactor).
 5. Review (`code-reviewer`, pri bezpečnostnom spúšťači aj `security-reviewer`).
 6. Overenie v reálnej aplikácii → **BRÁNA 2** – commit `feat: ...` a push po overení.
 

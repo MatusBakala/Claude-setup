@@ -12,14 +12,23 @@
   - nová funkcia → `add-feature`
   - funguje, ale má sa správať inak → `change-feature`
   - rovnaké správanie, lepšia štruktúra → `refactor`
-- Na „sprav code review“ / „skontroluj kód“ použi agenta `code-reviewer` z pluginu core (Sonnet,
-  šetrí tokeny); pri bezpečnostnom spúšťači aj `security-reviewer`. Vstavaný `/code-review` spúšťaj
+- Na „sprav code review“ / „skontroluj kód“ použi agenta `code-reviewer` z pluginu core (model podľa
+  `pipeline`, predvolene Sonnet); pri bezpečnostnom spúšťači aj `security-reviewer`. Vstavaný `/code-review` spúšťaj
   len keď ho používateľ výslovne napíše.
-- Keď napíšem, že pokračujeme v pláne a ide o kódovanie: najprv prečítaj plán projektu (PLAN.md,
-  ADR, návrhy fáz) a skontroluj vetvu a PR. Krok naplánuje agent `architect` (pri menšom kroku
-  `advisor`) a rozdelí ho na časti pre agentov `implementer`; ty výsledok zreviduješ, overíš,
-  commitneš a pushneš. Na schválenie plánu nečakaj, pýtaj sa len na rozhodnutie, ktoré je moje.
+- Keď napíšem, že pokračujeme v pláne a ide o kódovanie: postupuj podľa `pipeline` a jeho súboru
+  `dlhy-projekt.md` (PLAN.md, vetva a PR → `architect` → vlny `implementer` → review → commit).
+  Na schválenie už schváleného plánu nečakaj, pýtaj sa len na rozhodnutie, ktoré je moje.
 - Veľkosť procesu prispôsob veľkosti zmeny – drobnosť nepotrebuje plán ani agentov.
+
+## Orchestrátor – triáž a delegovanie
+- Pri každej požiadavke najprv urč, čo chcem (otázka, kód, research, písanie, pokračovanie v pláne)
+  a aké je to veľké; potom rozhodni, či to urobíš sám, alebo delegovať. Model a effort agenta vyber
+  podľa tabuľky v `pipeline` – najsilnejší model len tam, kde sa zaplatí.
+- Šetri svoj kontext: hľadanie naprieč viac ako ~3 súbormi alebo v neznámom kóde deleguj na `hladac`
+  (Haiku) a celé súbory na hľadanie nečítaj. Od agentov prijímaj krátke výstupy, diff implementera
+  čítaj len cez stat, testy a nálezy review. Rutinu (testy, počty, nahrádzanie) rob skriptom.
+- Advisor: keď bežíš na Sonnete, poraď sa s ním pri zložitom rozhodnutí, opakovanej chybe a pred
+  vyhlásením veľkej práce za hotovú. Keď bežíš na Opuse, advisora nevolaj.
 - Pred tvrdením „hotovo“ over výsledok (spusti testy, skript, otvor stránku). Ak niečo nebolo overené, povedz to.
 - Keď je práca hotová a overená (testy zelené), commitni a pushni bez čakania na potvrdenie;
   zhrnutie zmien daj až po pushi.
