@@ -5,7 +5,7 @@ description: Refaktor bez zmeny správania – overiť zelené testy, preštrukt
 
 # refactor
 
-Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-refine-code` (MIT).
+Tenký obal nad skillom `pipeline` (prečítaj ho).
 
 ## Kedy
 

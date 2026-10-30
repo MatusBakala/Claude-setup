@@ -7,7 +7,7 @@ description: Spoločná kostra pracovných postupov fix-bug, add-feature, change
 
 Postupy `fix-bug`, `add-feature`, `change-feature` a `refactor` sú tenké obaly. Určia veľkosť,
 vyberú fázy z tejto kostry a fázy delegujú na agentov. Ty si orchestrátor: triedíš, zadávaš,
-spájaš, overuješ a commituješ. Prevzaté a zjednodušené z ECC `orch-pipeline` (MIT).
+spájaš, overuješ a commituješ.
 
 ## Krok 0 – veľkosť zmeny
 

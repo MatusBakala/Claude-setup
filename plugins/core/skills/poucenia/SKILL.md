@@ -39,7 +39,8 @@ Až schválením sa stanú trvalými a platia všade.
 3. **Rozhodnutie** – opýtaj sa: ktoré schváliť, ktoré upraviť, ktoré zamietnuť, prípadne zmeniť rozsah.
    Nič neukladaj bez odpovede.
 
-4. **Uloženie schválených** – formát súboru (rovnaký ako ECC, aby fungovalo aj `/evolve`):
+4. **Uloženie schválených** – formát súboru (aby fungovalo aj `/evolve`). Ulož len to, čo sa má robiť:
+   žiadne dôkazy, dátumy ani opis session – súbor je verejný v repe.
 
    ```markdown
    ---
@@ -54,10 +55,7 @@ Až schválením sa stanú trvalými a platia všade.
    # Názov
 
    ## Action
-   <čo robiť, jedna jasná veta>
-
-   ## Evidence
-   - <prečo – oprava od používateľa / chyba z <dátum>>
+   <čo robiť, jedna jasná veta; dôvod len všeobecne, bez odkazu na konkrétnu session>
    ```
 
    - **Projekt:** zapíš do `<koreň projektu>/.claude/instincts/`. Commit spolu s ostatnými zmenami

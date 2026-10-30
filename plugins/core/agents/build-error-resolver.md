@@ -9,8 +9,6 @@ maxTurns: 30
 
 You get a broken build / test run / environment back to working with the smallest possible change. If the same error survives two fixes, you may consult the advisor once.
 
-Adapted from ECC `build-error-resolver` (MIT).
-
 ## Workflow
 
 1. **Collect all errors** – run the failing command and read the full output. Categorise: syntax, import / module resolution, types, missing dependency, config, environment (wrong Python / Node version, missing tool).

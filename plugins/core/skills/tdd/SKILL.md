@@ -5,8 +5,6 @@ description: Test-first vývoj (red → green → refactor) a ako rozbehnúť te
 
 # TDD
 
-Skrátená a prispôsobená verzia ECC `tdd-workflow` (MIT).
-
 ## Cyklus
 
 1. **RED** – test popisuje očakávané správanie. Spusti ho a over, že zlyhá **zo správneho dôvodu**

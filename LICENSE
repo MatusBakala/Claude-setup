@@ -22,7 +22,5 @@ SOFTWARE.
 
 ---
 
-Portions of this repository (plugins/core/learning/ and the adapted skills and
-agents marked "Adapted from ECC") are derived from ECC
-(https://github.com/affaan-m/ECC), Copyright (c) 2026 Affaan Mustafa, licensed
-under the MIT License. See plugins/core/learning/LICENSE-ECC.
+The directory plugins/core/learning/ contains third-party code licensed under
+the MIT License; see plugins/core/learning/LICENSE-ECC.

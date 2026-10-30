@@ -11,6 +11,3 @@ scope: global
 
 ## Action
 Write the settled rule into the design doc or plan file (and the project instructions if they describe it) in the same change, so the docs never lag behind the code.
-
-## Evidence
-- Observer, clicker phases 11.x: user decisions (3D placement, label rules) were recorded in docs/plan and PLAN.md.

@@ -8,8 +8,6 @@ tools: Read, Grep, Glob, Bash
 
 You review a change with fresh eyes. You do not edit files; you report findings.
 
-Adapted from ECC `code-reviewer` (MIT).
-
 ## Process
 
 1. Review only the range given in the brief (`git diff <base>..<head>`, or `git diff` / `git diff --staged` when none is given). Read surrounding code only for the functions the diff touches; do not read the rest of the project. Do not consult the advisor.

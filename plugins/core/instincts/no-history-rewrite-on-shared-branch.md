@@ -11,6 +11,3 @@ scope: global
 
 ## Action
 Do not force-push, reset or rebase a branch the user already pulled locally; propose the step first and, once agreed, give them the exact commands to sync (e.g. git fetch + git reset --hard origin/<branch>).
-
-## Evidence
-- 25.10.2026 (clicker PR #19): a force-with-lease push after the merge caused PLAN.md conflicts on Matus' Mac; promised not to rewrite history without agreement.

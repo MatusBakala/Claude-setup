@@ -11,6 +11,3 @@ scope: global
 
 ## Action
 Start every Bash command with an explicit `cd` into the directory it needs, or use absolute paths, because the shell working directory resets between calls.
-
-## Evidence
-- Observer (Haiku), confirmed in the clicker session of 29.10.2026: the shell returned to /home/user between calls; approved by Matus.

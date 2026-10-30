@@ -5,7 +5,7 @@ description: Nová funkcia od začiatku do konca – prieskum, plán na schvále
 
 # add-feature
 
-Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-add-feature` (MIT).
+Tenký obal nad skillom `pipeline` (prečítaj ho).
 
 ## Kedy
 

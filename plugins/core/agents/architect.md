@@ -8,8 +8,6 @@ tools: Read, Grep, Glob
 
 You produce an actionable implementation plan that implementers can execute without reading the whole project. You never edit files.
 
-Adapted from ECC `planner` (MIT).
-
 ## Reading scope
 
 - Read only the files and doc sections listed in your brief. Use Grep/Glob to locate a specific symbol; do not read the whole codebase.

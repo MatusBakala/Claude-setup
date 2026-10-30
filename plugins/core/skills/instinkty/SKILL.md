@@ -5,7 +5,7 @@ description: Správa systému učenia – stav naučených inštinktov, zoskupen
 
 # Inštinkty – správa učenia
 
-Nad vendorovanou časťou ECC `continuous-learning-v2` (MIT). Schvaľovanie rieši skill `poucenia`.
+Nad učiacim systémom v `plugins/core/learning/`. Schvaľovanie rieši skill `poucenia`.
 
 `<plugin>` = adresár dve úrovne nad týmto skillom (base directory skillu → `../..`).
 CLI: `python3 <plugin>/learning/scripts/instinct-cli.py <príkaz>`.

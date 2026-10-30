@@ -1,7 +1,7 @@
 {
   "name": "core",
-  "version": "0.2.1",
-  "description": "Matúšovo univerzálne prostredie: orchestrátor deleguje na agentov s modelom a effortom podľa náročnosti (hľadač, architekt, implementer, review, bezpečnosť, build), pracovné postupy s bránami, TDD, vlny pre dlhé projekty, preferencie a učenie z chýb cez inštinkty. Postavené na vzoroch z ECC (MIT).",
+  "version": "0.2.2",
+  "description": "Matúšovo univerzálne prostredie: orchestrátor deleguje na agentov s modelom a effortom podľa náročnosti (hľadač, architekt, implementer, review, bezpečnosť, build), pracovné postupy s bránami, TDD, vlny pre dlhé projekty, preferencie a učenie z chýb cez inštinkty.",
   "author": {
     "name": "Matúš Bakala"
   },
