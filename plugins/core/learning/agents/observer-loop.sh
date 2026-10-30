@@ -6,6 +6,8 @@
 # parallel Claude analysis processes.
 
 set +e
+# claude-setup: archives hold prompts and file contents - keep them private to the user.
+umask 077
 unset CLAUDECODE
 
 SLEEP_PID=""

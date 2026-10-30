@@ -11,6 +11,8 @@
 # Can also be registered manually in ~/.claude/settings.json.
 
 set -e
+# claude-setup: observations hold prompts and file contents - keep them private to the user.
+umask 077
 
 # Hook phase from CLI argument: "pre" (PreToolUse) or "post" (PostToolUse).
 # Manual settings.json installs can call this script without the plugin
@@ -205,8 +207,8 @@ MAX_FILE_SIZE_MB=10
 # Auto-purge observation files older than 30 days (runs once per session)
 PURGE_MARKER="${PROJECT_DIR}/.last-purge"
 if [ ! -f "$PURGE_MARKER" ] || [ "$(find "$PURGE_MARKER" -mtime +1 2>/dev/null)" ]; then
-  # claude-setup: also purge archives written by the observer after analysis (processed-*).
-  find "${PROJECT_DIR}" \( -name "observations-*.jsonl" -o -name "processed-*.jsonl" \) -mtime +30 -delete 2>/dev/null || true
+  # claude-setup: also purge observer archives (processed-*) and leftovers of a failed restore.
+  find "${PROJECT_DIR}" \( -name "observations-*.jsonl" -o -name "processed-*.jsonl" -o -name "observations.jsonl.processing.*" \) -mtime +30 -delete 2>/dev/null || true
   touch "$PURGE_MARKER" 2>/dev/null || true
 fi
 
@@ -293,12 +295,17 @@ _SECRET_RE = re.compile(
 
 # claude-setup: bare credentials that carry no keyword (GitHub, Anthropic/OpenAI, AWS, Slack,
 # Google, JWT, PEM private keys - also when truncation cut off the END line).
+# The lookbehind also accepts a JSON escape (\n, \r, \t), since dict tool I/O is serialized first.
 _TOKEN_RE = re.compile(
-    r"(?<![A-Za-z0-9])(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
-    r"|sk-[A-Za-z0-9_\-]{20,255}|(?:AKIA|ASIA)[0-9A-Z]{16}|xox[abposr]-[A-Za-z0-9\-]{10,255}"
+    r"(?:(?<![A-Za-z0-9])|(?<=\\[nrt]))(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
+    r"|sk-[A-Za-z0-9_\-]{20,255}|[sr]k_(?:live|test)_[A-Za-z0-9]{10,255}|(?:AKIA|ASIA)[0-9A-Z]{16}"
+    r"|xox[abposr]-[A-Za-z0-9\-]{10,255}|glpat-[A-Za-z0-9_\-]{20,255}|npm_[A-Za-z0-9]{36}|hf_[A-Za-z0-9]{30,255}"
     r"|AIza[0-9A-Za-z_\-]{35}|eyJ[A-Za-z0-9_\-]{10,2000}\.eyJ[A-Za-z0-9_\-]{10,4000}\.[A-Za-z0-9_\-]{10,2000})"
-    r"|-----BEGIN [A-Z ]{0,40}PRIVATE KEY-----(?:[\s\S]{0,8000}?-----END [A-Z ]{0,40}PRIVATE KEY-----|[\s\S]{0,8000})"
+    r"|-----BEGIN [A-Z ]{0,40}PRIVATE KEY(?: BLOCK)?-----"
+    r"(?:[\s\S]{0,8000}?-----END [A-Z ]{0,40}PRIVATE KEY(?: BLOCK)?-----|[\s\S]{0,8000})"
 )
+# Password in a connection string: scheme://user:PASSWORD@host
+_URL_PASS_RE = re.compile(r"(://[^\s:/@]{1,256}:)[^\s@/]{1,256}@")
 
 import signal
 def _clv2_bail(*_):
@@ -313,6 +320,7 @@ except Exception:
 raw = sys.stdin.read()[:2000]
 raw = _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", raw)
 raw = _TOKEN_RE.sub("[REDACTED]", raw)
+raw = _URL_PASS_RE.sub(r"\1[REDACTED]@", raw)
 print(json.dumps({"timestamp": os.environ["TIMESTAMP"], "event": "parse_error", "raw": raw}))
 ' >> "$OBSERVATIONS_FILE"
   exit 0
@@ -374,18 +382,24 @@ _SECRET_RE = re.compile(
 
 # claude-setup: bare credentials that carry no keyword (GitHub, Anthropic/OpenAI, AWS, Slack,
 # Google, JWT, PEM private keys - also when truncation cut off the END line).
+# The lookbehind also accepts a JSON escape (\n, \r, \t), since dict tool I/O is serialized first.
 _TOKEN_RE = re.compile(
-    r"(?<![A-Za-z0-9])(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
-    r"|sk-[A-Za-z0-9_\-]{20,255}|(?:AKIA|ASIA)[0-9A-Z]{16}|xox[abposr]-[A-Za-z0-9\-]{10,255}"
+    r"(?:(?<![A-Za-z0-9])|(?<=\\[nrt]))(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
+    r"|sk-[A-Za-z0-9_\-]{20,255}|[sr]k_(?:live|test)_[A-Za-z0-9]{10,255}|(?:AKIA|ASIA)[0-9A-Z]{16}"
+    r"|xox[abposr]-[A-Za-z0-9\-]{10,255}|glpat-[A-Za-z0-9_\-]{20,255}|npm_[A-Za-z0-9]{36}|hf_[A-Za-z0-9]{30,255}"
     r"|AIza[0-9A-Za-z_\-]{35}|eyJ[A-Za-z0-9_\-]{10,2000}\.eyJ[A-Za-z0-9_\-]{10,4000}\.[A-Za-z0-9_\-]{10,2000})"
-    r"|-----BEGIN [A-Z ]{0,40}PRIVATE KEY-----(?:[\s\S]{0,8000}?-----END [A-Z ]{0,40}PRIVATE KEY-----|[\s\S]{0,8000})"
+    r"|-----BEGIN [A-Z ]{0,40}PRIVATE KEY(?: BLOCK)?-----"
+    r"(?:[\s\S]{0,8000}?-----END [A-Z ]{0,40}PRIVATE KEY(?: BLOCK)?-----|[\s\S]{0,8000})"
 )
+# Password in a connection string: scheme://user:PASSWORD@host
+_URL_PASS_RE = re.compile(r"(://[^\s:/@]{1,256}:)[^\s@/]{1,256}@")
 
 def scrub(val):
     if val is None:
         return None
     val = _SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + (m.group(3) or "") + "[REDACTED]", str(val))
-    return _TOKEN_RE.sub("[REDACTED]", val)
+    val = _TOKEN_RE.sub("[REDACTED]", val)
+    return _URL_PASS_RE.sub(r"\1[REDACTED]@", val)
 
 if parsed["input"]:
     observation["input"] = scrub(parsed["input"])
