@@ -50,7 +50,7 @@ PID_FILE="${PROJECT_DIR}/.observer.pid"
 LOG_FILE="${PROJECT_DIR}/observer.log"
 OBSERVATIONS_FILE="${PROJECT_DIR}/observations.jsonl"
 INSTINCTS_DIR="${PROJECT_DIR}/instincts/personal"
-SENTINEL_FILE="${CLV2_OBSERVER_SENTINEL_FILE:-${PROJECT_ROOT:-$PROJECT_DIR}/.observer.lock}"
+SENTINEL_FILE="${CLV2_OBSERVER_SENTINEL_FILE:-${PROJECT_DIR}/.observer.lock}"
 
 write_guard_sentinel() {
   printf '%s\n' 'observer paused: confirmation or permission prompt detected; rerun start-observer.sh --reset after reviewing observer.log' > "$SENTINEL_FILE"
@@ -141,6 +141,8 @@ done
 
 if [ "$RESET_OBSERVER" = "true" ]; then
   rm -f "$SENTINEL_FILE"
+  # claude-setup: older versions wrote the sentinel into the repo root; remove it there too.
+  if [ -n "${PROJECT_ROOT:-}" ]; then rm -f "${PROJECT_ROOT}/.observer.lock"; fi
 fi
 
 case "$ACTION" in

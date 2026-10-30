@@ -32,7 +32,8 @@ Nastavenie platí hneď alebo najneskôr od ďalšej session (v cloude sa prejav
 
 ```
 práca → hooky zapisujú volania nástrojov aj tvoje správy → observer (Haiku, effort low, max 1× za 20 min
-      od 60 zápisov, 8:00–23:00; vidí schválené inštinkty, aby ich nenavrhoval znova)
+      od 60 zápisov, najstarších 500 na beh, 8:00–23:00 – v cloude bez okna; vidí schválené inštinkty,
+      aby ich nenavrhoval znova)
       → automatické inštinkty (lokálne, ~/.local/share/ecc-homunculus)
       → /poucenia: schváliť / upraviť / zamietnuť
       → schválené: projektové → <projekt>/.claude/instincts/   globálne → plugins/core/instincts/ (toto repo)
@@ -88,5 +89,18 @@ Po úprave zvýš `version` v `plugins/core/.claude-plugin/plugin.json`, aby sa 
 ## Licencia
 
 MIT. Časti odvodené z ECC (Copyright (c) 2026 Affaan Mustafa, MIT) – pozri `LICENSE`
-a `plugins/core/learning/LICENSE-ECC`. Jediná zmena vo vendorovanom kóde: `learning/hooks/observe.sh`
-pozoruje aj cloud sessions (`remote*`) a JetBrains.
+a `plugins/core/learning/LICENSE-ECC`.
+
+Zmeny vo vendorovanom kóde (v kóde označené komentárom `claude-setup:`, pri aktualizácii z ECC ich zachovaj):
+
+- `hooks/observe.sh` – pozoruje aj cloud sessions (`remote*`) a JetBrains; maskuje aj samotné kľúče
+  bez kľúčového slova (GitHub, Anthropic/OpenAI, AWS, Slack, Google, JWT, PEM); čistenie po 30 dňoch
+  maže aj spracované archívy (`processed-*`).
+- `agents/observer-loop.sh` – effort observera je nastavený (`ECC_OBSERVER_EFFORT`, predvolene low);
+  observer dostane zoznam schválených inštinktov; analyzuje **najstaršie** záznamy a archivuje len tie,
+  zvyšok počká na ďalší beh (predtým sa pri veľkej aktivite staršie záznamy stratili).
+- `agents/session-guardian.sh` – zámok starší ako 10 minút sa považuje za neplatný; v cloude
+  (`CLAUDE_CODE_REMOTE=true`) sa nepoužíva časové okno 8:00–23:00 (kontajner beží v UTC).
+- `scripts/detect-project.sh`, `agents/start-observer.sh` – súbor `.observer.lock` sa zapisuje do
+  dátového priečinka observera, nie do koreňa tvojho repa.
+- `agents/observer.md` – len dokumentácia (nikde sa nenačítava), hodnoty zosúladené s `config.json`.

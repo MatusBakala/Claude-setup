@@ -28,6 +28,11 @@ MAX_IDLE="${OBSERVER_MAX_IDLE_SECONDS:-1800}"
 # Uses HHMM integer comparison. Works on BSD date (macOS) and GNU date (Linux).
 # Supports overnight windows such as 2200-0600.
 # Set both ACTIVE_START and ACTIVE_END to 0 to disable this gate.
+# claude-setup: cloud sessions run in UTC and are short-lived, so the window is skipped there.
+if [ "${CLAUDE_CODE_REMOTE:-}" = "true" ]; then
+  ACTIVE_START=0
+  ACTIVE_END=0
+fi
 if [ "$ACTIVE_START" -ne 0 ] || [ "$ACTIVE_END" -ne 0 ]; then
   current_hhmm=$(date +%k%M | tr -d ' ')
   current_hhmm_num=$(( 10#${current_hhmm:-0} ))
@@ -70,6 +75,12 @@ mkdir -p "$(dirname "$LOG_PATH")" || {
 }
 
 _lock_dir="${LOG_PATH}.lock"
+# claude-setup: a lock left by a killed process (SIGKILL skips the trap) would block every
+# later cycle; treat a lock older than 10 minutes as stale.
+if [ -d "$_lock_dir" ] && [ -n "$(find "$_lock_dir" -maxdepth 0 -mmin +10 2>/dev/null)" ]; then
+  echo "session-guardian: removing stale lock" >&2
+  rm -rf "$_lock_dir"
+fi
 if ! mkdir "$_lock_dir" 2>/dev/null; then
   # Another observer holds the lock — skip this cycle to avoid double-spawns
   echo "session-guardian: log locked by concurrent process, skipping cycle" >&2

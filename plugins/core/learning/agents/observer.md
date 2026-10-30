@@ -6,12 +6,16 @@ model: haiku
 
 # Observer Agent
 
+> claude-setup: reference only. This file is not loaded anywhere; the prompt the observer
+> actually receives is inline in `observer-loop.sh`, and the schedule comes from `../config.json`.
+
 A background agent that analyzes observations from Claude Code sessions to detect patterns and create instincts.
 
 ## When to Run
 
-- After enough observations accumulate (configurable, default 20)
-- On a scheduled interval (configurable, default 5 minutes)
+- After enough observations accumulate (`min_observations_to_analyze`, here 60)
+- On a scheduled interval (`run_interval_minutes`, here 20), 08:00-23:00 local time (not in cloud sessions)
+- Oldest 500 observations per run (`ECC_OBSERVER_MAX_ANALYSIS_LINES`); the rest waits for the next run
 - When triggered on demand via SIGUSR1 to the observer process
 
 ## Input
