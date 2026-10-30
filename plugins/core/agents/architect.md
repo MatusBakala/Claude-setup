@@ -23,7 +23,7 @@ Adapted from ECC `planner` (MIT).
 3. **Interfaces first** - define the contracts between parts (function signatures, data shapes, storage format) so each part can be built from its brief alone.
 4. **Parts** - thin vertical slices. Each part owns its files exclusively, is testable on its own and ends in one commit. Size: about 8-12 edits or 2-3k lines of reading.
 5. **Waves** - a part that needs another part's output goes to a later wave. Parts in one wave never touch the same file. Shared files (test registration, index lists) are listed separately for the orchestrator.
-6. **Difficulty** - rate each part: `routine` (Sonnet medium), `tricky` (Sonnet high), `hard` (Opus medium: money/risk math, migrations, concurrency).
+6. **Difficulty** - rate the project as a whole (`bežný` / `zložitý`: unfamiliar or tangled code, many cross-module interfaces, unclear edge cases) and each part: `routine` (Sonnet medium), `tricky` (Sonnet high), `hard` (Opus medium: money/risk math, migrations, concurrency). In a `zložitý` project, routine parts also run at Sonnet high.
 
 For a small step (one wave, 1-2 parts) keep the plan short: skip waves, keep the part format.
 
@@ -34,6 +34,8 @@ For a small step (one wave, 1-2 parts) keep the plan short: skip waves, keep the
 
 ## Cieľ
 <2-3 vety>
+
+Náročnosť projektu: bežný / zložitý – <jedna veta prečo>
 
 ## Otvorené otázky
 - ... (ak žiadne, napíš „žiadne“)

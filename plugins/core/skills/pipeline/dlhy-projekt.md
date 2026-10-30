@@ -22,7 +22,9 @@ ty pri spájaní.
 2. **Paralelne 2–4 implementeri**, každý s `isolation: worktree` a s riadkom **Báza** v zadaní
    (worktree vzniká z hlavnej vetvy, bez bázy by nevidel predchádzajúce vlny). Jedna časť =
    sekvenčne v hlavnom checkoute, bez worktree.
-3. Model a effort každej časti podľa jej náročnosti z plánu.
+3. Model a effort každej časti podľa jej náročnosti a náročnosti projektu z plánu (pravidlo
+   „Effort implementera“ v `SKILL.md`). Ak sa ukáže, že projekt je ťažší, než plán odhadol,
+   zmeň náročnosť projektu v `PLAN.md` a ďalšie časti posielaj na high.
 4. **Spojenie** – každú časť zvlášť: `git cherry-pick --no-commit <commit>`, vyrieš spoločné súbory
    (ponechaj obe strany) a commitni ju s jej správou – časti ostanú samostatné commity (pozri inštinkt
    o worktree commitoch). Potom spusti **celú** sadu testov.

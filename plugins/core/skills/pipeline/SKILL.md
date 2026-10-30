@@ -61,6 +61,13 @@ sú v hlavičke agenta; meň ich, len keď náročnosť konkrétnej úlohy patr�
 
 - Náročnosť časti určuje plán: `routine` → bežná, `tricky` → zložitejšia, `hard` → ťažká logika.
   Pri malej zmene bez plánu ju určíš ty.
+- **Effort implementera (Sonnet) určuješ ty**, medium alebo high. Anthropic pre Sonnet 5.5 odporúča
+  medium pre presne zadané agentické kódovanie a high pre ťažšie alebo dlhšie úlohy. Preto:
+  - **medium** – časť je presne zadaná (súbory, rozhranie, testy) v známom kóde,
+  - **high** – časť je `tricky`, dlhšia (8+ úprav alebo 3+ súbory), v neznámom kóde, s nejasnými
+    okrajovými prípadmi, alebo projekt má v `PLAN.md` náročnosť „zložitý“ (high je potom predvolený
+    pre všetky jeho časti),
+  - opakovanie po slabom výsledku na medium → high, ďalší stupeň → Opus medium.
 - **Eskalácia:** slabý alebo zlý výsledok → zopakuj úlohu raz o stupeň vyššie. Druhé zlyhanie →
   pozri sa na to sám alebo sa opýtaj používateľa.
 - Drobnosť urob sám. Delegovanie sa oplatí, len keď agent ušetrí viac čítania, než stojí jeho zadanie.
