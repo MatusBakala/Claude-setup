@@ -537,13 +537,15 @@ archive_analyzed_observations() {
   fi
   archive_dir="${PROJECT_DIR}/observations.archive"
   mkdir -p "$archive_dir"
-  processing="${OBSERVATIONS_FILE}.processing.$$"
+  processing="${OBSERVATIONS_FILE}.processing.$$.$(date +%s)"
   mv "$OBSERVATIONS_FILE" "$processing" 2>/dev/null || return
   sleep 0.2  # let a hook write that opened the old file before the move land
   head -n "$analyzed" "$processing" > "$archive_dir/processed-$(date +%Y%m%d-%H%M%S)-$$.jsonl" 2>/dev/null || true
   remaining=$(( $(wc -l < "$processing" 2>/dev/null || echo 0) - analyzed ))
   if [ "$remaining" -gt 0 ]; then
     tail -n +"$((analyzed + 1))" "$processing" | append_observations 2>> "$LOG_FILE" || {
+      # Keep only the unanalyzed rest, so the next run's leftover merge does not re-add archived lines.
+      tail -n +"$((analyzed + 1))" "$processing" > "$processing.rest" && mv "$processing.rest" "$processing"
       echo "[$(date)] Failed to restore $remaining unanalyzed observations; kept in $(basename "$processing")" >> "$LOG_FILE"
       return
     }
