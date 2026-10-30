@@ -295,9 +295,9 @@ _SECRET_RE = re.compile(
 
 # claude-setup: bare credentials that carry no keyword (GitHub, Anthropic/OpenAI, AWS, Slack,
 # Google, JWT, PEM private keys - also when truncation cut off the END line).
-# The lookbehind also accepts a JSON escape (\n, \r, \t), since dict tool I/O is serialized first.
+# The lookbehind also accepts a JSON escape (\n, \r, \t, \b, \f), since dict tool I/O is serialized first.
 _TOKEN_RE = re.compile(
-    r"(?:(?<![A-Za-z0-9])|(?<=\\[nrt]))(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
+    r"(?:(?<![A-Za-z0-9])|(?<=\\[nrtbf]))(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
     r"|sk-[A-Za-z0-9_\-]{20,255}|[sr]k_(?:live|test)_[A-Za-z0-9]{10,255}|(?:AKIA|ASIA)[0-9A-Z]{16}"
     r"|xox[abposr]-[A-Za-z0-9\-]{10,255}|glpat-[A-Za-z0-9_\-]{20,255}|npm_[A-Za-z0-9]{36}|hf_[A-Za-z0-9]{30,255}"
     r"|AIza[0-9A-Za-z_\-]{35}|eyJ[A-Za-z0-9_\-]{10,2000}\.eyJ[A-Za-z0-9_\-]{10,4000}\.[A-Za-z0-9_\-]{10,2000})"
@@ -382,9 +382,9 @@ _SECRET_RE = re.compile(
 
 # claude-setup: bare credentials that carry no keyword (GitHub, Anthropic/OpenAI, AWS, Slack,
 # Google, JWT, PEM private keys - also when truncation cut off the END line).
-# The lookbehind also accepts a JSON escape (\n, \r, \t), since dict tool I/O is serialized first.
+# The lookbehind also accepts a JSON escape (\n, \r, \t, \b, \f), since dict tool I/O is serialized first.
 _TOKEN_RE = re.compile(
-    r"(?:(?<![A-Za-z0-9])|(?<=\\[nrt]))(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
+    r"(?:(?<![A-Za-z0-9])|(?<=\\[nrtbf]))(?:gh[pousr]_[A-Za-z0-9]{30,255}|github_pat_[A-Za-z0-9_]{22,255}"
     r"|sk-[A-Za-z0-9_\-]{20,255}|[sr]k_(?:live|test)_[A-Za-z0-9]{10,255}|(?:AKIA|ASIA)[0-9A-Z]{16}"
     r"|xox[abposr]-[A-Za-z0-9\-]{10,255}|glpat-[A-Za-z0-9_\-]{20,255}|npm_[A-Za-z0-9]{36}|hf_[A-Za-z0-9]{30,255}"
     r"|AIza[0-9A-Za-z_\-]{35}|eyJ[A-Za-z0-9_\-]{10,2000}\.eyJ[A-Za-z0-9_\-]{10,4000}\.[A-Za-z0-9_\-]{10,2000})"

@@ -141,6 +141,8 @@ done
 
 if [ "$RESET_OBSERVER" = "true" ]; then
   rm -f "$SENTINEL_FILE"
+  # claude-setup: older versions wrote the sentinel into the repo root; remove it there too.
+  if [ -n "${PROJECT_ROOT:-}" ]; then rm -f "${PROJECT_ROOT}/.observer.lock"; fi
 fi
 
 case "$ACTION" in
