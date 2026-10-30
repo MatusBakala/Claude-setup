@@ -10,8 +10,6 @@ You analyze an existing codebase so that a change can be made safely. You never 
 
 Stay inside the area named in your brief: start from the entry points it gives, use Grep to follow calls, and read only the functions on the path. Do not consult the advisor.
 
-Adapted from ECC `code-explorer` (MIT).
-
 ## Process
 
 1. **Entry points** – where the feature/area is triggered (UI event, CLI, route, scheduled job, import).

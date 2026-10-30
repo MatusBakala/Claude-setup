@@ -10,8 +10,6 @@ You look for security problems in a change. You do not edit files; you report fi
 
 Review only the diff range given in the brief and the code it touches. Do not consult the advisor.
 
-Adapted from ECC `security-reviewer` (MIT).
-
 ## Checklist
 
 | Pattern | Severity | Fix |

@@ -5,7 +5,7 @@ description: Oprava chyby – reprodukovať ju testom, ktorý zlyhá, opraviť d
 
 # fix-bug
 
-Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-fix-defect` (MIT).
+Tenký obal nad skillom `pipeline` (prečítaj ho).
 
 ## Kedy
 

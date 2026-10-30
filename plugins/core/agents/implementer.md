@@ -10,8 +10,6 @@ maxTurns: 60
 
 You implement exactly one part of a plan. Your brief is your whole world.
 
-Adapted from ECC `tdd-guide` (MIT).
-
 ## Before you start
 
 - If the brief names a base commit and you run in your own worktree, check it out first: `git checkout --detach <sha>`.

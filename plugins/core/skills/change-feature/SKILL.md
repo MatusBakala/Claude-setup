@@ -5,7 +5,7 @@ description: Zmena existujúcej funkčnej vlastnosti na nové požadované sprá
 
 # change-feature
 
-Tenký obal nad skillom `pipeline` (prečítaj ho). Prevzaté z ECC `orch-change-feature` (MIT).
+Tenký obal nad skillom `pipeline` (prečítaj ho).
 
 ## Kedy
 

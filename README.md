@@ -2,7 +2,6 @@
 
 Moje univerzálne prostredie pre Claude Code. Jeden plugin (`core`), ktorý funguje v každom projekte –
 na počítači aj v cloude – bez toho, aby som pri novom projekte čokoľvek vyberal.
-Postavené na vzoroch z [ECC](https://github.com/affaan-m/ECC) (MIT), zúžené na to, čo reálne používam.
 
 ## Čo obsahuje
 
@@ -12,7 +11,7 @@ Postavené na vzoroch z [ECC](https://github.com/affaan-m/ECC) (MIT), zúžené 
 | **TDD** (skill) | `tdd` – red → green → refactor a ako rozbehnúť testy bez frameworku (vanilla JS cez `node:test`, Python cez pytest/unittest). |
 | **Agenti** | Orchestrátor (hlavná session) deleguje podľa náročnosti: `hladac` (Haiku high – hľadanie), `code-explorer` (Sonnet medium – tok kódu), `architect` (Opus high – plán po vlnách), `implementer` (Sonnet medium – jedna časť plánu, TDD, číta len svoje súbory), `code-reviewer` (Sonnet medium), `security-reviewer` (Sonnet high), `build-error-resolver` (Sonnet low). Model a effort pri volaní mení orchestrátor len podľa tabuľky v `pipeline`. |
 | **Preferencie** | `plugins/core/context/preferencie.md` – môj „globálny CLAUDE.md“. Vkladá sa do každej session. |
-| **Učenie** | Observer na pozadí (Haiku, z ECC `continuous-learning-v2`) sleduje prácu a navrhuje *inštinkty*. `/poucenia` ich dá na schválenie a schválené uloží natrvalo. `/instinkty` = stav, evolve, nastavenia. |
+| **Učenie** | Observer na pozadí (Haiku) sleduje prácu a navrhuje *inštinkty*. `/poucenia` ich dá na schválenie a schválené uloží natrvalo. `/instinkty` = stav, evolve, nastavenia. |
 
 ## Advisor
 
@@ -88,11 +87,10 @@ Po úprave zvýš `version` v `plugins/core/.claude-plugin/plugin.json`, aby sa 
 
 ## Licencia
 
-MIT. Časti odvodené z ECC (Copyright (c) 2026 Affaan Mustafa, MIT) – pozri `LICENSE`
-a `plugins/core/learning/LICENSE-ECC`.
+MIT – pozri `LICENSE`. Priečinok `plugins/core/learning/` obsahuje kód tretej strany pod licenciou MIT
+(`plugins/core/learning/LICENSE-ECC`); tento súbor musí ostať, kým sa učiaci systém neprepíše.
 
-Zmeny vo vendorovanom kóde (v kóde označené komentárom `claude-setup:`, pri aktualizácii z ECC ich zachovaj):
-
+Vlastné úpravy v `learning/` (v kóde označené komentárom `claude-setup:`):
 - `hooks/observe.sh` – pozoruje aj cloud sessions (`remote*`) a JetBrains; maskuje aj samotné kľúče
   bez kľúčového slova (GitHub, Anthropic/OpenAI, AWS, Slack, Google, JWT, PEM); čistenie po 30 dňoch
   maže aj spracované archívy (`processed-*`).

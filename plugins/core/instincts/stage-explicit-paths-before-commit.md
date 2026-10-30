@@ -11,6 +11,3 @@ scope: global
 
 ## Action
 Stage only the files of the current change by naming their paths (never git add -A or .), then check git status before committing.
-
-## Evidence
-- Observer, clicker sessions with parallel implementer agents October 2026.

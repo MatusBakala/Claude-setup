@@ -11,6 +11,3 @@ scope: global
 
 ## Action
 Pipe potentially long command output through `head`, `tail` or `cut` so only the relevant lines come back.
-
-## Evidence
-- Observer (Haiku); approved by Matus 29.10.2026.
