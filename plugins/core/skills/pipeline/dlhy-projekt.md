@@ -32,8 +32,11 @@ ty pri spájaní.
    istým rozsahom → review znova.
 6. **Commit a push** podľa preferencií, potom aktualizuj sekciu Stav v `PLAN.md` a commitni ju.
 
-Ak agent nahlási „hotovo“ bez commitu alebo s podozrivo malým výsledkom, nie je hotovo – zadaj
-znova s odkazom na to, čo už v jeho worktree je.
+Ak agent nahlási „hotovo“ bez commitu alebo s podozrivo malým výsledkom, nie je hotovo – pošli mu
+to cez `SendMessage` (pokračuje vo svojom worktree s celou históriou). Pri paralelnej vlne sleduj
+agentov priebežne: kto ide zle, dostane opravu hneď, nie až po skončení celej vlny. Nálezy z review
+vlny (už po spojení) daj novému implementerovi s Bázou = aktuálny HEAD – starý worktree spojenú
+vlnu nevidí.
 
 ## Stav v PLAN.md (odovzdávka)
 
@@ -56,6 +59,10 @@ Commitnutý stav je jediná odovzdávka – čo nie je v commite a v `PLAN.md`, 
    pri jednej vlne netreba).
 2. `security-reviewer`, ak niektorá vlna zasiahla bezpečnostný spúšťač.
 3. PR podľa preferencií; v `PLAN.md` označ vetvu ako hotovú.
+4. **Po zlúčení uprac vetvy** – pri každej práci s repom over zlúčené PR a ich vetvy zmaž (vzdialenú
+   aj lokálnu). Najprv podľa inštinktov: `git merge-base --is-ancestor <head PR> origin/main` a
+   `git cherry -v origin/main <vetva>` musí byť prázdny. Ak mazanie nie je povolené, povedz
+   používateľovi, ktoré vetvy sú overené a môže ich zmazať.
 
 ## Čo nerobiť
 

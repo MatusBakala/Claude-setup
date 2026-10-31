@@ -68,7 +68,8 @@ sú v hlavičke agenta; meň ich, len keď náročnosť konkrétnej úlohy patr�
     okrajovými prípadmi, alebo projekt má v `PLAN.md` náročnosť „zložitý“ (high je potom predvolený
     pre všetky jeho časti),
   - opakovanie po slabom výsledku na medium → high, ďalší stupeň → Opus medium.
-- **Eskalácia:** slabý alebo zlý výsledok → zopakuj úlohu raz o stupeň vyššie. Druhé zlyhanie →
+- **Eskalácia:** slabý alebo zlý výsledok → zopakuj úlohu raz o stupeň vyššie (nové volanie `Agent`;
+  chýbajúcu informáciu alebo opravu dopĺňaš tomu istému agentovi cez `SendMessage`). Druhé zlyhanie →
   pozri sa na to sám alebo sa opýtaj používateľa.
 - Drobnosť urob sám. Delegovanie sa oplatí, len keď agent ušetrí viac čítania, než stojí jeho zadanie.
 
@@ -88,14 +89,35 @@ Hotovo keď:  testy zelené, 1 commit „<správa>“
 Výstup:      formát Report z agenta implementer
 ```
 
+Nástroj Agent nemá povinné polia, preto šablónu vynúti hook `scripts/brief-check.py`: bez riadkov
+Cieľ, Čítaj, Upravuj, Testy, Hotovo keď (a pri `isolation: worktree` bez Bázy s commitom) volanie
+implementera zablokuje s dôvodom. Doplň chýbajúce riadky a zavolaj znova – neobchádzaj ho.
+
 Ostatní agenti dostanú aspoň cieľ, presný rozsah (súbory / diff `base..head`) a čo majú vrátiť.
 
 Po návrate:
 
-- **Commit je odovzdanie, nie zhrnutie.** „Hotovo“ bez commitu = nehotovo; zadaj znova s tým, čo už existuje.
+- **Commit je odovzdanie, nie zhrnutie.** „Hotovo“ bez commitu = nehotovo; pošli mu to cez `SendMessage`
+  (nižšie). Hook pri zastavení implementera bez `commit: <sha>` alebo `BLOCKED` ho raz vráti do práce;
+  ak sa vráti znova bez commitu, je to na tebe.
 - Over `git diff --stat <báza>..<commit>` proti zoznamu „Upravuj“. Zmena mimo neho = vráť alebo vysvetli.
 - Celý diff implementera nečítaj; stačí stat, testy a nálezy review. Vážny nález over na `súbor:riadok`.
-- `BLOCKED` vyrieš ty (doplň zadanie, rozhodni, prípadne sa opýtaj používateľa) a zadaj znova.
+- `BLOCKED` vyrieš ty (doplň zadanie, rozhodni, prípadne sa opýtaj používateľa) a pošli doplnenie tomu
+  istému agentovi cez `SendMessage`.
+
+### Pokračovanie a oprava kurzu – `SendMessage`
+
+Výsledok agenta obsahuje jeho `agentId`. `SendMessage` s `to: <agentId>` ho obnoví s celou históriou
+(prečítané súbory, testy, rozpracovaný worktree) – nezačína odznova a netreba nové zadanie podľa šablóny.
+
+- **Kedy `SendMessage`:** `BLOCKED` po doplnení informácie, „hotovo“ bez commitu, nález z review pre
+  tú istú časť pred spojením (rovnaký rozsah), drobná oprava kurzu. Správa obsahuje len to, čo chýbalo
+  alebo čo sa mení.
+- **Kedy nové volanie `Agent`:** eskalácia na vyšší model alebo effort (sú pevné od spustenia), iná
+  časť plánu, agent zrušený používateľom, alebo keď by stará história skôr mýlila (zlý smer od začiatku).
+- **Počas behu:** agenti bežia na pozadí. Keď kým beží zistíš, že ide zle (nová informácia, zmena
+  rozhrania), pošli mu `SendMessage` hneď; keď je jeho práca zbytočná, zastav ho `TaskStop`.
+- Ak `SendMessage` v session nie je, zadaj znova novým volaním `Agent` s tým, čo už existuje.
 
 ## Review
 
