@@ -32,8 +32,11 @@ ty pri spájaní.
    istým rozsahom → review znova.
 6. **Commit a push** podľa preferencií, potom aktualizuj sekciu Stav v `PLAN.md` a commitni ju.
 
-Ak agent nahlási „hotovo“ bez commitu alebo s podozrivo malým výsledkom, nie je hotovo – zadaj
-znova s odkazom na to, čo už v jeho worktree je.
+Ak agent nahlási „hotovo“ bez commitu alebo s podozrivo malým výsledkom, nie je hotovo – pošli mu
+to cez `SendMessage` (pokračuje vo svojom worktree s celou históriou). Pri paralelnej vlne sleduj
+agentov priebežne: kto ide zle, dostane opravu hneď, nie až po skončení celej vlny. Nálezy z review
+vlny (už po spojení) daj novému implementerovi s Bázou = aktuálny HEAD – starý worktree spojenú
+vlnu nevidí.
 
 ## Stav v PLAN.md (odovzdávka)
 
