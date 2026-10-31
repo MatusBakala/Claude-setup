@@ -1,5 +1,5 @@
 {
-  "description": "Kontext na začiatku session (preferencie + inštinkty) a pozorovanie volaní nástrojov pre učenie.",
+  "description": "Kontext na začiatku session (preferencie + inštinkty), kontrola zadania a odovzdávky implementera a pozorovanie volaní nástrojov pre učenie.",
   "hooks": {
     "SessionStart": [
       {
@@ -36,6 +36,16 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/brief-check.py\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
         "matcher": "*",
         "hooks": [
           {
@@ -56,6 +66,18 @@
             "command": "bash \"${CLAUDE_PLUGIN_ROOT}/learning/hooks/observe.sh\" post",
             "async": true,
             "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "implementer",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/brief-check.py\"",
+            "timeout": 5
           }
         ]
       }

@@ -27,6 +27,19 @@ Kto ho volá: orchestrátor na Sonnete (pri zložitom rozhodnutí, opakovanej ch
 (raz). Orchestrátor na Opuse, `architect`, `hladac`, `code-explorer` ani revieweri ho nevolajú.
 Nastavenie platí hneď alebo najneskôr od ďalšej session (v cloude sa prejavilo hneď).
 
+## Kontrola zadania a odovzdávky
+
+Nástroj Agent v Claude Code nemá povinné polia – celé zadanie je jeden voľný `prompt`, takže
+šablónu z `pipeline` by držala len disciplína orchestrátora. Hook `scripts/brief-check.py` ju
+vynúti:
+
+- **PreToolUse (Agent)** – zadanie pre `implementer` bez riadkov Cieľ, Čítaj, Upravuj, Testy,
+  Hotovo keď (pri `isolation: worktree` aj bez Bázy s commitom) zablokuje s dôvodom.
+- **SubagentStop (implementer)** – report bez `commit: <sha>` alebo `BLOCKED` vráti agentovi raz
+  do práce; pri druhom zastavení ho pustí a rozhodne orchestrátor.
+
+Ostatných agentov nekontroluje. Vypnúť: `CORE_BRIEF_CHECK=off`.
+
 ## Ako funguje učenie
 
 ```

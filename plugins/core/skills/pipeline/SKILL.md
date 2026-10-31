@@ -88,11 +88,17 @@ Hotovo keď:  testy zelené, 1 commit „<správa>“
 Výstup:      formát Report z agenta implementer
 ```
 
+Nástroj Agent nemá povinné polia, preto šablónu vynúti hook `scripts/brief-check.py`: bez riadkov
+Cieľ, Čítaj, Upravuj, Testy, Hotovo keď (a pri `isolation: worktree` bez Bázy s commitom) volanie
+implementera zablokuje s dôvodom. Doplň chýbajúce riadky a zavolaj znova – neobchádzaj ho.
+
 Ostatní agenti dostanú aspoň cieľ, presný rozsah (súbory / diff `base..head`) a čo majú vrátiť.
 
 Po návrate:
 
 - **Commit je odovzdanie, nie zhrnutie.** „Hotovo“ bez commitu = nehotovo; zadaj znova s tým, čo už existuje.
+  Hook pri zastavení implementera bez `commit: <sha>` alebo `BLOCKED` ho raz vráti do práce; ak sa
+  vráti znova bez commitu, je to na tebe.
 - Over `git diff --stat <báza>..<commit>` proti zoznamu „Upravuj“. Zmena mimo neho = vráť alebo vysvetli.
 - Celý diff implementera nečítaj; stačí stat, testy a nálezy review. Vážny nález over na `súbor:riadok`.
 - `BLOCKED` vyrieš ty (doplň zadanie, rozhodni, prípadne sa opýtaj používateľa) a zadaj znova.
