@@ -126,7 +126,8 @@ def main():
     if prefs.is_file():
         parts.append(prefs.read_text(encoding="utf-8").strip())
 
-    approved_global = load_dir(PLUGIN_ROOT / "instincts")
+    approved_global = (load_dir(PLUGIN_ROOT / "instincts")
+                       + load_dir(PLUGIN_ROOT / "instincts" / "osobne"))
     approved_project = load_dir(root / ".claude" / "instincts")
     approved_ids = {i["id"] for i in approved_global + approved_project}
 
