@@ -35,6 +35,17 @@
 - Do commit správ ani popisov PR nepridávaj `Co-Authored-By`, `Claude-Session` odkaz ani riadok
   „Generated with Claude Code“. Toto pravidlo má prednosť pred predvolenou attribution.
 
+## Pull requesty
+Popis PR číta človek, ktorý má rozhodnúť o zlúčení – nie záznam o tom, čo si robil.
+- **Prečo** – 1–3 vety: aký problém sa rieši alebo čo sa mení a prečo.
+- **Čo sa mení** – len správanie, ktoré uvidí používateľ alebo ďalší vývojár, v 1–5 odrážkach.
+- **Overenie** – jeden riadok: čo bežalo a či prešlo (napr. „testy zelené, stránka otvorená“).
+- **Pozor na** – len ak je čo: riziko, rozhodnutie na posúdenie, neoverená vec, krok po zlúčení. Inak sekciu vynechaj.
+- Nepíš: zoznam súborov, prerozprávané commity, zoznam vyskúšaných vstupov, priebeh a nálezy review,
+  hotové checklisty, tabuľky, ktoré opakujú obsah súborov, prázdne alebo „N/A“ sekcie.
+- Dĺžka podľa veľkosti zmeny: drobnosť 2–4 riadky, bežná zmena do ~12, veľká vetva do ~25. Názov max ~70 znakov.
+- Pri dlhom projekte po každej vlne popis neprepisuj dopisovaním – pred zlúčením ho napíš znova ako výsledný stav.
+
 ## Inštrukčné súbory (CLAUDE.md, AGENTS.md)
 - Držia sa krátke, lebo sa načítavajú do každej session (cieľ do ~120 riadkov). Patria sem len pravidlá
   a príkazy potrebné takmer v každej úlohe: build, štýl, git, pracovný postup, zakázané veci.
