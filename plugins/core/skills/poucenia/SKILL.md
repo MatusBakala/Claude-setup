@@ -65,6 +65,9 @@ Až schválením sa stanú trvalými a platia všade.
      2. Ak nie je, `git clone https://github.com/MatusBakala/claude-setup.git ~/claude-setup`.
      3. Zapíš do `plugins/core/instincts/<id>.md`, commitni hneď po schválení
         (`chore(instincts): add <id>`) a push.
+        **Osobné** inštinkty (opisujú používateľa, jeho osobné veci, účty, rodinu, bydlisko a pod.)
+        zapíš do `plugins/core/instincts/osobne/<id>.md` – priečinok je v `.gitignore`, takže ich
+        necommituj ani nepushuj.
      4. Ak klon alebo push nejde (napr. cloud session bez prístupu k repu), ulož súbor dočasne
         do projektu ako `.claude/instincts/<id>.md` so `scope: global` a povedz používateľovi,
         že ho treba presunúť do `claude-setup` (urobí to nabudúce `/poucenia` s prístupom).
