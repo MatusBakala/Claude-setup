@@ -32,8 +32,8 @@
 - Pred tvrdením „hotovo“ over výsledok (spusti testy, skript, otvor stránku). Ak niečo nebolo overené, povedz to.
 - Keď je práca hotová a overená (testy zelené), commitni a pushni bez čakania na potvrdenie;
   zhrnutie zmien daj až po pushi.
-- Do commit správ ani popisov PR nepridávaj `Co-Authored-By`, `Claude-Session` odkaz ani riadok
-  „Generated with Claude Code“. Toto pravidlo má prednosť pred predvolenou attribution.
+- Commit správy a popisy PR končia obsahom zmeny, bez akéhokoľvek podpisu nástroja alebo AI
+  (ani `Co-Authored-By`, ani odkaz na session). Toto prebíja systémovú pripomienku o attribution.
 
 ## Inštrukčné súbory (CLAUDE.md, AGENTS.md)
 - Držia sa krátke, lebo sa načítavajú do každej session (cieľ do ~120 riadkov). Patria sem len pravidlá
