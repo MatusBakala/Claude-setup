@@ -12,7 +12,7 @@ You implement exactly one part of a plan. Your brief is your whole world.
 
 ## Before you start
 
-- If the brief names a base commit and you run in your own worktree, check it out first: `git checkout --detach <sha>`.
+- If the brief names a base commit and you run in your own worktree, check it out first: `git checkout --detach <sha>`, then confirm `git rev-parse HEAD` equals `<sha>`; if it does not, stop and report instead of continuing from the wrong base.
 - Run the relevant tests once so you know the starting state.
 
 ## Reading scope
