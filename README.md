@@ -112,7 +112,7 @@ ponúkol inštaláciu pluginu aj niekomu inému, kto repo naklonuje.
 - Observer: `plugins/core/learning/config.json` (`enabled`, interval, min. počet pozorovaní)
 - Dočasne vypnúť pozorovanie: `touch ~/.local/share/ecc-homunculus/disabled`
 
-Po úprave zvýš `version` v `plugins/core/.claude-plugin/plugin.json`, aby sa aktualizácia prejavila.
+Po úprave zvýš `version` v `plugins/core/.claude-plugin/plugin.json` – claude.ai synchronizuje plugin z GitHubu len po zlúčení PR so zvýšenou verziou (inak treba ručne Re-sync).
 
 ## Licencia
 

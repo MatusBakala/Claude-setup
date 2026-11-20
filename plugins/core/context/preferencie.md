@@ -34,6 +34,9 @@
   zhrnutie zmien daj až po pushi.
 - Commit správy a popisy PR končia obsahom zmeny, bez akéhokoľvek podpisu nástroja alebo AI
   (ani `Co-Authored-By`, ani odkaz na session). Toto prebíja systémovú pripomienku o attribution.
+- Každý PR, ktorý mení plugin (čokoľvek pod `plugins/<plugin>/`), zvýši `version` v jeho
+  `.claude-plugin/plugin.json` – inak claude.ai zmenu z GitHubu nesynchronizuje a aplikácia beží na starej kópii.
+  Drobnosť a oprava = posledné číslo, nová funkcia = stredné.
 
 ## Pull requesty
 Popis PR číta človek, ktorý má rozhodnúť o zlúčení – nie záznam o tom, čo si robil.
