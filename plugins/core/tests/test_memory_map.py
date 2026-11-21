@@ -110,9 +110,57 @@ class MemoryMapTest(unittest.TestCase):
         self.assertIn("[[Claude/Instinkty/sync-main|", note)
         self.assertIn("[[Claude/Pamat/web - deploy|", note)
 
+    def test_memory_links_follow_exported_names(self):
+        memory = self.claude_home / "projects" / mm.encode_project_path(str(self.web)) / "memory"
+        write(memory / "deploy_ci.md", "---\nname: deploy-guide\n---\n\n## From CI\n")
+        write(memory / "links.md", (
+            "[[deploy-guide]] [[deploy_ci#From CI|CI guide]] [[unpublished]]\n"
+            "| [[deploy_ci\\|CI guide]] |\n"
+            "[[deploy_ci]] | Yes\n"
+            "[[Claude/Pamat/web - deploy-guide]] `[[deploy-guide]]`\n\n"
+            "```md\n[[deploy-guide]]\n```\n"
+        ))
+        self.run_map()
+        note = self.read("Pamat/web - links.md")
+        self.assertIn(
+            "[[Claude/Pamat/web - deploy-guide|deploy-guide]] "
+            "[[Claude/Pamat/web - deploy-guide#From CI|CI guide]] [[unpublished]]",
+            note,
+        )
+        self.assertIn("[[Claude/Pamat/web - deploy-guide]] `[[deploy-guide]]`", note)
+        self.assertIn("| [[Claude/Pamat/web - deploy-guide\\|CI guide]] |", note)
+        self.assertIn("[[Claude/Pamat/web - deploy-guide\\|deploy_ci]] | Yes", note)
+        self.assertIn("```md\n[[deploy-guide]]\n```", note)
+
+    def test_memory_links_prefer_own_project_and_keep_ambiguous_links(self):
+        for project in ("web", "api", "docs"):
+            root = self.tmp / "code" / project
+            write(root / "CLAUDE.md", "# Project\n")
+            path = self.claude_home / "projects" / mm.encode_project_path(str(root)) / "memory"
+            write(path / "links.md", "[[deploy]] [[web-only]]\n")
+            if project != "docs":
+                write(path / "deploy.md", "# Deploy\n")
+            if project == "web":
+                write(path / "web-only.md", "# Web only\n")
+        self.run_map()
+        self.assertIn("[[Claude/Pamat/api - deploy|deploy]]", self.read("Pamat/api - links.md"))
+        self.assertIn(
+            "[[deploy]] [[Claude/Pamat/web - web-only|web-only]]",
+            self.read("Pamat/docs - links.md"),
+        )
+
     def test_missing_project_roots_are_skipped(self):
         self.run_map()
         self.assertFalse((self.vault / "Claude" / "Projekty" / "gone.md").exists())
+
+    def test_preserves_links_to_existing_and_generated_notes(self):
+        memory = self.claude_home / "projects" / mm.encode_project_path(str(self.web)) / "memory"
+        write(self.vault / "Manual" / "Roadmap.md", "# Manual roadmap\n")
+        write(memory / "roadmap.md", "# Exported roadmap\n")
+        write(memory / "tdd.md", "# Exported tdd note\n")
+        write(memory / "links.md", "[[Roadmap]] [[tdd]]\n")
+        self.run_map()
+        self.assertIn("[[Roadmap]] [[tdd]]", self.read("Pamat/web - links.md"))
 
     def test_discovers_project_with_only_approved_instincts(self):
         repo = self.tmp / "code" / "hermes"

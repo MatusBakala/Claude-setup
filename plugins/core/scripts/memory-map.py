@@ -26,6 +26,7 @@ import json
 import os
 import re
 import sys
+from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -334,7 +335,44 @@ def one_line(text, limit=160):
     return text if len(text) <= limit else text[: limit - 1] + "…"
 
 
-def build_notes(data, folder):
+def note_link_name(name):
+    return name.strip().casefold().removesuffix(".md")
+
+
+def rewrite_memory_links(body, resolve):
+    """Prepíš wikilinky v texte, bloky kódu a komentáre ponechaj doslova."""
+    markdown = re.compile(
+        r"^ {0,3}(?P<fence>(?P<marker>[\x60~])(?P=marker){2,})[^\n]*\n"
+        r".*?(?:^ {0,3}(?P=fence)(?P=marker)*[ \t]*$|\Z)"
+        r"|(?<!\x60)(?P<ticks>\x60+)(?!\x60).*?(?<!\x60)(?P=ticks)(?!\x60)"
+        r"|%%.*?(?:%%|\Z)"
+        r"|(?<!\\)\[\[(?P<name>[^\[\]\n#/|\\]+)(?P<section>#[^\[\]\n|\\]*)?"
+        r"(?P<label>\\?\|[^\[\]\n]*)?\]\]",
+        re.MULTILINE | re.DOTALL,
+    )
+
+    def replace(match):
+        name = match["name"]
+        target = resolve(note_link_name(name)) if name else None
+        if not target:
+            return match[0]
+        section = match["section"] or ""
+        label = match["label"]
+        if not label:
+            start = body.rfind("\n", 0, match.start()) + 1
+            end = body.find("\n", match.end())
+            if end == -1:
+                end = len(body)
+            prefix = markdown.sub("", body[start:match.start()])
+            suffix = markdown.sub("", body[match.end():end])
+            table_row = "|" in prefix or "|" in suffix
+            label = f"\\|{name}" if table_row else f"|{name}"
+        return f"[[{target}{section}{label}]]"
+
+    return markdown.sub(replace, body)
+
+
+def build_notes(data, folder, existing_names=()):
     notes = {}
     f = folder.strip("/")
 
@@ -376,8 +414,14 @@ def build_notes(data, folder):
         inst["copies"] = []
         displayed_instincts.append(inst)
 
+    memories_by_name = defaultdict(set)
+    memories_by_project_and_name = defaultdict(set)
     for mem in data["memories"]:
         mem["note"] = unique("Pamat", f"{mem['project'].name} - {mem['name']}")
+        for source_name in (mem["name"], mem["path"].stem):
+            name = note_link_name(source_name).replace("_", "-")
+            memories_by_name[name].add(mem["note"])
+            memories_by_project_and_name[mem["project"].root, name].add(mem["note"])
 
     def instinct_line(inst):
         return f"- {link(inst['note'], inst['id'])} — {one_line(inst['trigger'])}"
@@ -417,13 +461,6 @@ def build_notes(data, folder):
         props = {"typ": "projekt", "priecinok": str(p.root), "instinkty": len(p.instincts),
                  "pamat": len(p.memories), "claude_md": "ano" if p.claude_md else "nie"}
         notes[f"Projekty/{p.name}.md"] = note(props, "\n".join(parts))
-
-    # auto-memory
-    for m in data["memories"]:
-        props = {"typ": "pamat", "druh": m["type"], "projekt": link(f"Projekty/{m['project'].name}"),
-                 "zdroj": str(m["path"])}
-        body = f"{back}\n\n**{m['description']}**\n\n{m['body']}\n\n---\nZdroj: `{m['path']}`"
-        notes[m["note"] + ".md"] = note(props, body)
 
     # agenti a skilly
     for kind, folder_name, typ in (("agents", "Agenti", "agent"), ("skills", "Skilly", "skill")):
@@ -513,6 +550,28 @@ def build_notes(data, folder):
                  for s in data["skills"]] or ["- (žiadne)"]
     sections += ["", "## Tabuľka", f"![[{f + '/' if f else ''}Prehlad.base]]"]
     notes["Mapa.md"] = note({"typ": "mapa"}, "\n".join(sections))
+
+    # Platný odkaz má prednosť pred zhodou so starým názvom z auto-memory.
+    native_names = set(existing_names)
+    native_names.update(note_link_name(Path(rel).name) for rel in notes)
+    native_names.update(note_link_name(Path(m["note"]).name) for m in data["memories"])
+
+    def resolve_memory(project, name):
+        if name in native_names:
+            return None
+        key = name.replace("_", "-")
+        candidates = memories_by_project_and_name.get((project.root, key)) or memories_by_name.get(key)
+        if candidates and len(candidates) == 1:
+            target, = candidates
+            return f"{f}/{target}" if f else target
+
+    # auto-memory
+    for m in data["memories"]:
+        props = {"typ": "pamat", "druh": m["type"], "projekt": link(f"Projekty/{m['project'].name}"),
+                 "zdroj": str(m["path"])}
+        content = rewrite_memory_links(m["body"], lambda name: resolve_memory(m["project"], name))
+        body = f"{back}\n\n**{m['description']}**\n\n{content}\n\n---\nZdroj: `{m['path']}`"
+        notes[m["note"] + ".md"] = note(props, body)
     return notes
 
 
@@ -589,8 +648,18 @@ def write_notes(out_dir, notes):
 
 
 def build_map(sources, vault, folder="Claude"):
-    notes = build_notes(collect(sources), folder)
-    return write_notes(Path(vault) / folder, notes)
+    vault = Path(vault)
+    out_dir = vault / folder
+    owned = {out_dir / rel for rel in load_json(out_dir / MANIFEST).get("files", []) if isinstance(rel, str)}
+    existing_names = set()
+    for root, dirs, files in os.walk(vault):
+        dirs[:] = [name for name in dirs if not name.startswith(".")]
+        existing_names.update(
+            note_link_name(name) for name in files
+            if not name.startswith(".") and Path(root, name) not in owned
+        )
+    notes = build_notes(collect(sources), folder, existing_names)
+    return write_notes(out_dir, notes)
 
 
 # --- spustenie -------------------------------------------------------------------------------
