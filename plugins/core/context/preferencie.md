@@ -60,6 +60,11 @@ Popis PR číta človek, ktorý má rozhodnúť o zlúčení – nie záznam o t
 - Keď ťa opravím alebo sa vyrieši netriviálna chyba, na konci práce navrhni spustiť `/poucenia`.
 - Inštinkty nižšie dodržiavaj: schválené ako pravidlá, automaticky naučené len ako tipy.
 
+## Zdieľaná pamäť s Hermesom
+- Čo som robil v agentovi Hermes (iné počítače, iní provideri), je v `~/Matus-Agents/Hermes/`; zoznam je
+  v `~/Matus-Agents/Claude/Mapa.md` v sekcii „Z Hermesa“. Pri práci na projekte, ktorý mohol Hermes meniť,
+  sa tam najprv pozri. Do `Hermes/` nezapisuj; `Claude/` je generované a prepisuje sa.
+
 ## Moje projekty (orientačne)
 - Trading Journal – vanilla JS + IndexedDB, bez build kroku.
 - Backtesting – Python.

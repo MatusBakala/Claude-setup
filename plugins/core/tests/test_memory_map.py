@@ -202,5 +202,50 @@ class MemoryMapTest(unittest.TestCase):
         self.assertEqual(out.stdout, "")
 
 
+    def sources_with_hermes(self):
+        sources = self.sources()
+        sources.hermes_notes = self.vault / "Hermes"
+        return sources
+
+    def run_map_with_hermes(self):
+        return mm.build_map(self.sources_with_hermes(), self.vault, "Claude")
+
+    def test_map_lists_hermes_notes_newest_first_and_skips_readme(self):
+        hermes = self.vault / "Hermes"
+        write(hermes / "README.md", "# Hermes notes\n\nPravidla.\n")
+        write(hermes / "2026-11-20-macbook-seo.md",
+              "---\ndatum: 2026-11-20\nprojekt: osobny web\n---\n\n# SEO audit\n\nPrepisane texty.\n")
+        write(hermes / "2026-11-21-imac-worker.md", "# Worker deploy\n\nNasadene na Cloudflare.\n")
+        self.run_map_with_hermes()
+        index = self.read("Mapa.md")
+        self.assertIn("## Z Hermesa (2)", index)
+        self.assertNotIn("README", index)
+        self.assertLess(index.index("Worker deploy"), index.index("SEO audit"))
+        self.assertIn("[[Hermes/2026-11-21-imac-worker|Worker deploy]]", index)
+        self.assertIn("_(2026-11-20, osobny web)_ Prepisane texty.", index)
+
+    def test_map_has_no_hermes_section_when_the_folder_is_missing(self):
+        self.run_map_with_hermes()
+        self.assertNotIn("Z Hermesa", self.read("Mapa.md"))
+
+    def test_map_never_writes_into_the_hermes_folder(self):
+        hermes = self.vault / "Hermes"
+        write(hermes / "2026-11-21-imac-worker.md", "# Worker deploy\n\nHotovo.\n")
+        before = sorted((p.name, p.read_bytes()) for p in hermes.iterdir())
+        self.run_map_with_hermes()
+        self.run_map_with_hermes()
+        self.assertEqual(sorted((p.name, p.read_bytes()) for p in hermes.iterdir()), before)
+
+    def test_map_shows_only_the_newest_hermes_notes(self):
+        hermes = self.vault / "Hermes"
+        total = mm.HERMES_NOTES_SHOWN + 2
+        for index in range(total):
+            write(hermes / f"2026-11-{index + 1:02d}-imac-poznamka.md", f"# Poznamka {index}\n\nText.\n")
+        self.run_map_with_hermes()
+        index_text = self.read("Mapa.md")
+        self.assertIn(f"## Z Hermesa ({total})", index_text)
+        self.assertIn("a ďalších 2 starších", index_text)
+
+
 if __name__ == "__main__":
     unittest.main()
