@@ -114,6 +114,33 @@ class MemoryMapTest(unittest.TestCase):
         self.run_map()
         self.assertFalse((self.vault / "Claude" / "Projekty" / "gone.md").exists())
 
+    def test_discovers_project_with_only_approved_instincts(self):
+        repo = self.tmp / "code" / "hermes"
+        write(repo / ".claude" / "instincts" / "check-hooks.md",
+              instinct("check-hooks", "after hook changes", "Check both profiles.", scope="project"))
+        self.run_map()
+        self.assertIn('projekt: "[[Claude/Projekty/hermes]]"', self.read("Instinkty/check-hooks.md"))
+        self.assertIn("[[Claude/Instinkty/check-hooks|", self.read("Projekty/hermes.md"))
+
+    def test_identical_project_instincts_share_a_note_but_different_versions_do_not(self):
+        same = self.web / ".claude" / "instincts" / "locales.md"
+        original = same.read_text(encoding="utf-8")
+        copies = self.tmp / "code"
+        write(copies / "web-copy" / "CLAUDE.md", "# Web copy\n")
+        write(copies / "web-variant" / "CLAUDE.md", "# Web variant\n")
+        write(copies / "web-copy" / ".claude" / "instincts" / "locales.md", original)
+        write(copies / "web-variant" / ".claude" / "instincts" / "locales.md",
+              original.replace("Edit all locales.", "Edit public locales."))
+        self.run_map()
+        paths = sorted((self.vault / "Claude" / "Instinkty").glob("apply-locales*.md"))
+        self.assertEqual(len(paths), 2)
+        shared = "[[Claude/Instinkty/apply-locales|"
+        for owner in ("web", "web-copy"):
+            self.assertIn(shared, self.read(f"Projekty/{owner}.md"))
+        self.assertNotIn(shared, self.read("Projekty/web-variant.md"))
+        self.assertIn("[[Claude/Projekty/web-copy]]", self.read("Instinkty/apply-locales.md"))
+        self.assertIn("property: note.projekt", self.read("Prehlad.base"))
+
     def test_second_run_changes_nothing(self):
         self.run_map()
         stats = self.run_map()
