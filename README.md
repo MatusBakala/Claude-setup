@@ -68,6 +68,10 @@ Claude Code, agentov a skilly. Vstup je `Mapa.md`, tabuľka na filtrovanie `Preh
   ktoré sám vytvoril (`<priečinok>/.memory-map.json`); tvoje vlastné poznámky v priečinku nechá tak.
 - Mapa kopíruje obsah CLAUDE.md, inštinktov a auto-memory do vaultu – ak sa vault synchronizuje
   do cloudu, nedávaj do týchto súborov tajomstvá.
+- Poznámky z agenta Hermes: ak vo vaulte existuje priečinok `Hermes/` (názov sa dá zmeniť kľúčom
+  `hermes_folder`), vypíše ich skript do sekcie „Z Hermesa“ v `Mapa.md` (najnovších 30). Do priečinka
+  nikdy nezapisuje. Hook `SessionStart` (`scripts/vault-sync.py`) pred tým spraví `git pull --ff-only`
+  vo vaulte, ak je to git repozitár, takže poznámky z iných počítačov sú vidieť hneď na začiatku session.
 - Testy: `python3 -m unittest discover plugins/core/tests`.
 
 ## Inštalácia

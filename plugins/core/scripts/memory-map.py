@@ -6,6 +6,8 @@ Prečíta všetko, čo si Claude pamätá, a zapíše to ako prepojené poznámk
   - projekty: CLAUDE.md, schválené projektové inštinkty (<projekt>/.claude/instincts)
   - automaticky naučené inštinkty observera (ecc-homunculus)
   - auto-memory Claude Code (~/.claude/projects/*/memory)
+  - poznámky agenta Hermes z priečinka <vault>/Hermes (len sa prečítajú a vypíšu do Mapa.md,
+    skript do nich nikdy nezapisuje)
 
 Mapa je len na čítanie – zdroj pravdy ostávajú pôvodné súbory, ďalší beh ju prepíše.
 Skript mení iba súbory, ktoré sám vytvoril (zoznam v <priečinok>/.memory-map.json);
@@ -14,7 +16,8 @@ poznámky, ktoré si do priečinka pridáš ručne, nechá tak.
 Použitie:
   memory-map.py --vault ~/MojVault [--folder Claude] [--scan-dir ~/Developer]
   memory-map.py --hook   # SessionEnd hook: vault z CLAUDE_MEMORY_MAP_VAULT alebo
-                         # ~/.claude/memory-map.json {"vault": ..., "folder": ..., "scan_dirs": [...]};
+                         # ~/.claude/memory-map.json {"vault": ..., "folder": ..., "scan_dirs": [...],
+                         #                            "hermes_folder": "Hermes"};
                          # bez nastaveného vaultu nerobí nič a nikdy nezlyhá.
 """
 
@@ -30,6 +33,7 @@ MANIFEST = ".memory-map.json"
 YAML_RESERVED = {"true", "false", "yes", "no", "on", "off", "null", "y", "n", "~"}
 SKIP_DIRS = {"node_modules", "venv", ".venv", "__pycache__", "dist", "build"}
 SCAN_DEPTH = 3
+HERMES_NOTES_SHOWN = 30  # Mapa.md sa číta pri štarte session, preto v nej len najnovšie poznámky
 
 
 @dataclass
@@ -39,6 +43,8 @@ class Sources:
     claude_home: Path
     claude_json: Path
     scan_dirs: list = field(default_factory=list)
+    # Priečinok vo vaulte, kam píše Hermes. None = Hermes sa nepoužíva, sekcia v mape sa vynechá.
+    hermes_notes: Path = None
 
 
 @dataclass
@@ -133,6 +139,33 @@ def parse_instinct(path, stav, rozsah):
         "project": None,
         "project_label": meta.get("project_name", ""),
     }
+
+
+def read_hermes_notes(directory):
+    """Poznámky od Hermesa, najnovšie prvé (názov súboru začína dátumom). None = priečinok neexistuje.
+
+    Hermes tento priečinok vlastní; čítame ho len na zostavenie zoznamu v Mapa.md."""
+    if directory is None or not Path(directory).is_dir():
+        return None
+    notes = []
+    for path in sorted(Path(directory).glob("*.md"), reverse=True):
+        if path.name.lower() == "readme.md":
+            continue
+        text = read_text(path)
+        if text is None:
+            continue
+        meta, body = split_frontmatter(text)
+        heading = next((line[2:].strip() for line in body.splitlines() if line.startswith("# ")), "")
+        summary = meta.get("zhrnutie") or meta.get("summary") or next(
+            (line.strip() for line in body.splitlines() if line.strip() and not line.startswith("#")), "")
+        notes.append({
+            "stem": path.stem,
+            "title": heading or path.stem,
+            "summary": summary,
+            "date": meta.get("datum") or meta.get("date") or "",
+            "project": meta.get("projekt") or meta.get("project") or "",
+        })
+    return notes
 
 
 def collect(sources):
@@ -236,6 +269,8 @@ def collect(sources):
         "memories": memories,
         "agents": plugin_items("agent"),
         "skills": plugin_items("skill"),
+        "hermes": read_hermes_notes(sources.hermes_notes),
+        "hermes_folder": sources.hermes_notes.name if sources.hermes_notes else "",
     }
 
 
@@ -411,6 +446,21 @@ def build_notes(data, folder):
     auto = [i for i in data["instincts"] if i["stav"] == "automaticky"]
     sections = ["# Mapa pamäte Clauda", "", generated, ""]
     sections += ["## Globálne nastavenia"] + (globals_ or ["- (nič)"])
+    if data["hermes"] is not None:
+        hermes_folder = data["hermes_folder"]
+        shown = data["hermes"][:HERMES_NOTES_SHOWN]
+        sections += ["", f"## Z Hermesa ({len(data['hermes'])})",
+                     f"_Poznámky, čo som robil v agentovi Hermes (iné počítače a nástroje). "
+                     f"Píše ich Hermes do priečinka `{hermes_folder}/`, tu ich len vidno – neupravuj ich._"]
+        for hermes_note in shown:
+            details = [d for d in (hermes_note["date"], hermes_note["project"]) if d]
+            prefix = f"_({', '.join(details)})_ " if details else ""
+            sections.append(f"- [[{hermes_folder}/{hermes_note['stem']}|{hermes_note['title']}]] — "
+                            f"{prefix}{one_line(hermes_note['summary'], 120)}")
+        if not data["hermes"]:
+            sections.append("- (zatiaľ nič)")
+        elif len(data["hermes"]) > len(shown):
+            sections.append(f"- … a ďalších {len(data['hermes']) - len(shown)} starších v `{hermes_folder}/`")
     sections += ["", f"## Schválené globálne inštinkty ({len(approved_global)})"]
     sections += [instinct_line(i) for i in sorted(approved_global, key=lambda i: i["id"])] or ["- (žiadne)"]
     sections += ["", f"## Projekty ({len(data['projects'])})"]
@@ -525,12 +575,13 @@ def homunculus_dir():
     return Path.home() / ".local" / "share" / "ecc-homunculus"
 
 
-def default_sources(scan_dirs):
+def default_sources(scan_dirs, hermes_notes=None):
     plugin_root = Path(os.environ.get("CLAUDE_PLUGIN_ROOT") or Path(__file__).resolve().parent.parent)
     claude_home = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
     return Sources(plugin_root=plugin_root, homunculus=homunculus_dir(), claude_home=claude_home,
                    claude_json=Path.home() / ".claude.json",
-                   scan_dirs=[Path(d).expanduser() for d in scan_dirs])
+                   scan_dirs=[Path(d).expanduser() for d in scan_dirs],
+                   hermes_notes=hermes_notes)
 
 
 def load_config():
@@ -561,7 +612,11 @@ def main(argv=None):
         if not folder or Path(folder).is_absolute() or ".." in Path(folder).parts:
             raise ValueError(f"Priečinok mapy musí byť vnútri vaultu: {folder!r}")
         scan_dirs = args.scan_dirs or config.get("scan_dirs") or ["~/Developer"]
-        stats = build_map(default_sources(scan_dirs), vault, folder)
+        hermes_folder = str(config.get("hermes_folder") or "Hermes").strip("/")
+        if not hermes_folder or Path(hermes_folder).is_absolute() or ".." in Path(hermes_folder).parts \
+                or hermes_folder == folder:
+            raise ValueError(f"Priečinok Hermesa musí byť vnútri vaultu a iný ako mapa: {hermes_folder!r}")
+        stats = build_map(default_sources(scan_dirs, vault / hermes_folder), vault, folder)
         if not args.hook:
             print(f"Mapa: {vault / folder} – zapísané {stats['written']}, odstránené {stats['removed']}, "
                   f"preskočené (tvoje súbory) {stats['skipped']}")
