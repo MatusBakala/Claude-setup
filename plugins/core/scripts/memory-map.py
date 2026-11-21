@@ -107,12 +107,14 @@ def scan_claude_md(base, depth=SCAN_DEPTH):
     if not base.is_dir():
         return roots
     for dirpath, dirnames, filenames in os.walk(base):
-        rel_depth = len(Path(dirpath).relative_to(base).parts)
+        root = Path(dirpath)
+        rel_depth = len(root.relative_to(base).parts)
+        has_instincts = ".claude" in dirnames and (root / ".claude" / "instincts").is_dir()
         dirnames[:] = [d for d in dirnames if not d.startswith(".") and d not in SKIP_DIRS]
         if rel_depth >= depth:
             dirnames[:] = []
-        if "CLAUDE.md" in filenames:
-            roots.append(Path(dirpath))
+        if "CLAUDE.md" in filenames or has_instincts:
+            roots.append(root)
     return roots
 
 
@@ -124,7 +126,8 @@ def instinct_files(directory):
 
 
 def parse_instinct(path, stav, rozsah):
-    meta, body = split_frontmatter(read_text(path))
+    content = read_text(path)
+    meta, body = split_frontmatter(content)
     if not meta:
         return None
     return {
@@ -135,6 +138,7 @@ def parse_instinct(path, stav, rozsah):
         "stav": stav,
         "rozsah": rozsah,
         "body": body.strip(),
+        "content": content,
         "path": path,
         "project": None,
         "project_label": meta.get("project_name", ""),
@@ -356,9 +360,21 @@ def build_notes(data, folder):
             names = [f"{safe_name(candidates[0])} {n}"]
             n += 1
 
+    shared_notes = {}
+    displayed_instincts = []
     for inst in data["instincts"]:
+        if inst["stav"] == "schvaleny" and inst["project"]:
+            key = (inst["id"], inst["content"])
+            if key in shared_notes:
+                primary = shared_notes[key]
+                inst["note"] = primary["note"]
+                primary["copies"].append(inst)
+                continue
+            shared_notes[key] = inst
         inst["note"] = unique("Instinkty", inst["id"],
                               f"{inst['id']} ({inst['project_label'] or inst['stav']})")
+        inst["copies"] = []
+        displayed_instincts.append(inst)
 
     for mem in data["memories"]:
         mem["note"] = unique("Pamat", f"{mem['project'].name} - {mem['name']}")
@@ -367,15 +383,22 @@ def build_notes(data, folder):
         return f"- {link(inst['note'], inst['id'])} — {one_line(inst['trigger'])}"
 
     # inštinkty
-    for inst in data["instincts"]:
+    for inst in displayed_instincts:
         proj = inst["project"]
         props = {
             "typ": "instinkt", "rozsah": inst["rozsah"], "stav": inst["stav"],
             "confidence": inst["confidence"], "domena": inst["domain"],
-            "projekt": link(f"Projekty/{proj.name}") if proj and proj.name else inst["project_label"],
+            "projekt": link(f"Projekty/{proj.name}") if proj and proj.name else (
+                inst["project_label"] or ("Globálne" if inst["rozsah"] == "globalny" else "")
+            ),
             "zdroj": str(inst["path"]),
         }
         body = f"{back}\n\n**Kedy:** {inst['trigger']}\n\n{inst['body']}\n\n---\nZdroj: `{inst['path']}`"
+        if inst["copies"]:
+            body += "\n\nRovnaké pravidlo je aj v:\n"
+            for copy in inst["copies"]:
+                project_link = link("Projekty/" + copy["project"].name)
+                body += f"\n- {project_link} · `{copy['path']}`"
         notes[inst["note"] + ".md"] = note(props, body)
 
     # projekty
@@ -426,9 +449,14 @@ def build_notes(data, folder):
         "views:",
         "  - type: table",
         "    name: Inštinkty",
+        "    groupBy:",
+        "      property: note.projekt",
+        "      direction: ASC",
         "    filters:",
         "      and:",
         f"        - '{inf('Instinkty')}'",
+        "    sort:", "      - property: note.stav", "        direction: DESC",
+        "      - property: file.name", "        direction: ASC",
         "    order:", "      - file.name", "      - rozsah", "      - stav", "      - confidence",
         "      - domena", "      - projekt",
         "  - type: table",
