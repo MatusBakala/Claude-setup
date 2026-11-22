@@ -1,5 +1,5 @@
 {
-  "description": "Kontext na začiatku session (preferencie + inštinkty), kontrola zadania a odovzdávky implementera a pozorovanie volaní nástrojov pre učenie.",
+  "description": "Kontext na začiatku session (preferencie + inštinkty, stiahnutie vaultu s poznámkami z Hermesa), kontrola zadania a odovzdávky implementera, pozorovanie volaní nástrojov pre učenie a mapa pamäte do Obsidianu na konci session.",
   "hooks": {
     "SessionStart": [
       {
@@ -13,6 +13,11 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/ensure-advisor.py\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/vault-sync.py\"",
+            "timeout": 45
           }
         ]
       }
@@ -78,6 +83,17 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/brief-check.py\"",
             "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/memory-map.py\" --hook",
+            "timeout": 30
           }
         ]
       }

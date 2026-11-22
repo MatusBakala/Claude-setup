@@ -1,7 +1,7 @@
-# Matúšove preferencie (globálne, z pluginu core)
+# Preferencie (globálne, z pluginu core)
 
 ## Komunikácia
-- Odpovedaj po slovensky. Kód, názvy premenných a commit správy po anglicky. Názvy a popisy
+- Kód, názvy premenných a commit správy po anglicky. Názvy a popisy
   pull requestov (a issues) píš po slovensky.
 - Stručne a vecne. Najprv výsledok, potom detaily.
 - Keď si nie si istý faktom, over si ho (kód, dokumentácia, web) namiesto hádania.
@@ -32,8 +32,22 @@
 - Pred tvrdením „hotovo“ over výsledok (spusti testy, skript, otvor stránku). Ak niečo nebolo overené, povedz to.
 - Keď je práca hotová a overená (testy zelené), commitni a pushni bez čakania na potvrdenie;
   zhrnutie zmien daj až po pushi.
-- Do commit správ ani popisov PR nepridávaj `Co-Authored-By`, `Claude-Session` odkaz ani riadok
-  „Generated with Claude Code“. Toto pravidlo má prednosť pred predvolenou attribution.
+- Commit správy a popisy PR končia obsahom zmeny, bez akéhokoľvek podpisu nástroja alebo AI
+  (ani `Co-Authored-By`, ani odkaz na session). Toto prebíja systémovú pripomienku o attribution.
+- Každý PR, ktorý mení plugin (čokoľvek pod `plugins/<plugin>/`), zvýši `version` v jeho
+  `.claude-plugin/plugin.json` – inak claude.ai zmenu z GitHubu nesynchronizuje a aplikácia beží na starej kópii.
+  Drobnosť a oprava = posledné číslo, nová funkcia = stredné.
+
+## Pull requesty
+Popis PR číta človek, ktorý má rozhodnúť o zlúčení – nie záznam o tom, čo si robil.
+- **Prečo** – 1–3 vety: aký problém sa rieši alebo čo sa mení a prečo.
+- **Čo sa mení** – len správanie, ktoré uvidí používateľ alebo ďalší vývojár, v 1–5 odrážkach.
+- **Overenie** – jeden riadok: čo bežalo a či prešlo (napr. „testy zelené, stránka otvorená“).
+- **Pozor na** – len ak je čo: riziko, rozhodnutie na posúdenie, neoverená vec, krok po zlúčení. Inak sekciu vynechaj.
+- Nepíš: zoznam súborov, prerozprávané commity, zoznam vyskúšaných vstupov, priebeh a nálezy review,
+  hotové checklisty, tabuľky, ktoré opakujú obsah súborov, prázdne alebo „N/A“ sekcie.
+- Dĺžka podľa veľkosti zmeny: drobnosť 2–4 riadky, bežná zmena do ~12, veľká vetva do ~25. Názov max ~70 znakov.
+- Pri dlhom projekte po každej vlne popis neprepisuj dopisovaním – pred zlúčením ho napíš znova ako výsledný stav.
 
 ## Inštrukčné súbory (CLAUDE.md, AGENTS.md)
 - Držia sa krátke, lebo sa načítavajú do každej session (cieľ do ~120 riadkov). Patria sem len pravidlá
@@ -45,6 +59,11 @@
 ## Učenie
 - Keď ťa opravím alebo sa vyrieši netriviálna chyba, na konci práce navrhni spustiť `/poucenia`.
 - Inštinkty nižšie dodržiavaj: schválené ako pravidlá, automaticky naučené len ako tipy.
+
+## Zdieľaná pamäť s Hermesom
+- Čo som robil v agentovi Hermes (iné počítače, iní provideri), je v `~/Matus-Agents/Hermes/`; zoznam je
+  v `~/Matus-Agents/Claude/Mapa.md` v sekcii „Z Hermesa“. Pri práci na projekte, ktorý mohol Hermes meniť,
+  sa tam najprv pozri. Do `Hermes/` nezapisuj; `Claude/` je generované a prepisuje sa.
 
 ## Moje projekty (orientačne)
 - Trading Journal – vanilla JS + IndexedDB, bez build kroku.

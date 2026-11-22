@@ -37,7 +37,8 @@ a oznám ho jednou vetou, aby ho používateľ mohol zmeniť:
 - **6. Overenie a commit** – spusti testy a ak sa dá, aj aplikáciu / skript (pozri sa na výsledok,
   nie len na exit kód). Conventional commits (`fix:`, `feat:`, `refactor:` …), jeden logický celok
   na commit. → **BRÁNA 2**
-- **7. Finálne review a PR** – len pri vetve s viacerými vlnami, podľa sekcie Review.
+- **7. Finálne review a PR** – finálne review len pri vetve s viacerými vlnami, podľa sekcie Review.
+  Popis PR podľa preferencií (sekcia Pull requesty): krátky, bez priebehu práce.
 - **8. Poučenie** – ak sa počas práce niečo naučilo (oprava od používateľa, netriviálna príčina
   chyby, slepá ulička), navrhni `/poucenia`. Nespúšťaj ho sám.
 

@@ -54,6 +54,26 @@ práca → hooky zapisujú volania nástrojov aj tvoje správy → observer (Hai
 
 Lokálne automatické inštinkty v cloude zaniknú s kontajnerom – preto je dôležité občas spustiť `/poucenia`.
 
+## Mapa pamäte v Obsidiane
+
+`scripts/memory-map.py` zapíše všetko, čo si Claude pamätá, ako prepojené poznámky do Obsidian vaultu:
+preferencie, schválené aj automatické inštinkty, projekty (CLAUDE.md + ich inštinkty), auto-memory
+Claude Code, agentov a skilly. Vstup je `Mapa.md`, tabuľka na filtrovanie `Prehlad.base`.
+
+- Zapne sa nastavením vaultu v `~/.claude/memory-map.json`
+  (`{"vault": "/cesta/k/vaultu", "folder": "Claude", "scan_dirs": ["~/Developer"]}`)
+  alebo premennou `CLAUDE_MEMORY_MAP_VAULT`. Bez nich hook nerobí nič (napr. v cloude).
+- Hook `SessionEnd` mapu obnoví na konci každej session; ručne: `python3 plugins/core/scripts/memory-map.py`.
+- Mapa je len na čítanie – zdroj pravdy ostávajú pôvodné súbory. Skript prepíše a zmaže iba poznámky,
+  ktoré sám vytvoril (`<priečinok>/.memory-map.json`); tvoje vlastné poznámky v priečinku nechá tak.
+- Mapa kopíruje obsah CLAUDE.md, inštinktov a auto-memory do vaultu – ak sa vault synchronizuje
+  do cloudu, nedávaj do týchto súborov tajomstvá.
+- Poznámky z agenta Hermes: ak vo vaulte existuje priečinok `Hermes/` (názov sa dá zmeniť kľúčom
+  `hermes_folder`), vypíše ich skript do sekcie „Z Hermesa“ v `Mapa.md` (najnovších 30). Do priečinka
+  nikdy nezapisuje. Hook `SessionStart` (`scripts/vault-sync.py`) pred tým spraví `git pull --ff-only`
+  vo vaulte, ak je to git repozitár, takže poznámky z iných počítačov sú vidieť hneď na začiatku session.
+- Testy: `python3 -m unittest discover plugins/core/tests`.
+
 ## Inštalácia
 
 ### Na počítači (raz)
@@ -96,7 +116,7 @@ ponúkol inštaláciu pluginu aj niekomu inému, kto repo naklonuje.
 - Observer: `plugins/core/learning/config.json` (`enabled`, interval, min. počet pozorovaní)
 - Dočasne vypnúť pozorovanie: `touch ~/.local/share/ecc-homunculus/disabled`
 
-Po úprave zvýš `version` v `plugins/core/.claude-plugin/plugin.json`, aby sa aktualizácia prejavila.
+Po úprave zvýš `version` v `plugins/core/.claude-plugin/plugin.json` – claude.ai synchronizuje plugin z GitHubu len po zlúčení PR so zvýšenou verziou (inak treba ručne Re-sync).
 
 ## Licencia
 
