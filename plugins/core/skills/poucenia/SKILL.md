@@ -1,6 +1,6 @@
 ---
 name: poucenia
-description: Kontrola a schválenie toho, čo sa Claude naučil – prejde automaticky naučené inštinkty od observera aj poučenia z aktuálnej práce, navrhne pravidlá na schválenie a schválené uloží natrvalo (projektové do repa projektu, globálne do pluginu). Použi na „/poucenia“, „čo si sa naučil“, „zapamätaj si to“, „ulož si to pravidlo“, alebo po tom, čo ťa používateľ opravil či sa vyriešila netriviálna chyba.
+description: Kontrola a schválenie toho, čo sa Claude naučil – prejde automaticky naučené inštinkty od observera aj poučenia z aktuálnej práce, navrhne pravidlá na schválenie a schválené uloží natrvalo (tematické do skillu, ktorý sa načíta pri danej téme, projektové do repa projektu, globálne do pluginu). Použi na „/poucenia“, „čo si sa naučil“, „zapamätaj si to“, „ulož si to pravidlo“, alebo po tom, čo ťa používateľ opravil či sa vyriešila netriviálna chyba.
 ---
 
 # Poučenia
@@ -18,6 +18,21 @@ Až schválením sa stanú trvalými a platia všade.
   (projektové; `<hash>` je v hlavičke výstupu `status`) a v `…/ecc-homunculus/instincts/personal/` (globálne).
 - **Schválené projektové:** `<koreň projektu>/.claude/instincts/<id>.md` – commitujú sa s projektom.
 - **Schválené globálne:** `plugins/core/instincts/<id>.md` v repe `MatusBakala/claude-setup`.
+- **Tematické skilly:** `plugins/core/skills/<téma>/SKILL.md` v repe `claude-setup` (napr. `xcode`),
+  sekcia `## Poučenia`. Projektový tematický skill: `<koreň projektu>/.claude/skills/<téma>/SKILL.md`.
+
+## Ako sa čo načítava (podľa toho vyber miesto)
+
+- **Projektové aj globálne inštinkty** vkladá hook na štarte **každej** session (globálne vo všetkých
+  projektoch, projektové v každej session toho projektu). Stoja kontext vždy, aj keď sa téma neotvorí.
+- **Skill** sa načíta, **až keď je téma v hre** (podľa `description`). Poučenie v ňom nestojí nič,
+  kým sa s témou nepracuje.
+
+Preto: poučenie, ktoré platí len pri jednom nástroji, technológii alebo type práce (Xcode, TradingView,
+Pine, git rebase, Cloudflare …), patrí do **tematického skillu**, nie medzi inštinkty. Ak taký skill
+existuje, dopíš ho tam; ak nie, založ ho (krátky `description`, ktorý jasne povie, kedy sa má načítať,
+napr. „pred prvým volaním nástroja mcp__xcode__*“). Medzi vždy načítané inštinkty patrí len to, čo sa
+môže hodiť **v ktorejkoľvek** session (všeobecný postup, shell, git, preferencie). Pri pochybnosti skill.
 
 ## Postup
 
@@ -29,11 +44,15 @@ Až schválením sa stanú trvalými a platia všade.
 
 2. **Návrh** – ukáž tabuľku, každý kandidát jeden riadok:
 
-   | # | Pravidlo (keď … → urob …) | Rozsah | Confidence | Zdroj |
-   |---|---------------------------|--------|------------|-------|
+   | # | Pravidlo (keď … → urob …) | Kam | Confidence | Zdroj |
+   |---|---------------------------|-----|------------|-------|
 
-   Rozsah: **projekt** (konvencie, štruktúra, knižnice konkrétneho projektu) alebo **globálne**
-   (všeobecné postupy, git, bezpečnosť, tvoje preferencie). Pri pochybnosti projekt.
+   Kam (pozri „Ako sa čo načítava“):
+   - **skill `<téma>`** (globálny v pluginu alebo projektový) – poučenie viazané na nástroj či tému;
+   - **projekt** – inštinkt pre konvencie, štruktúru, knižnice konkrétneho projektu, ktoré platia
+     takmer pri každej práci v ňom;
+   - **globálne** – inštinkt pre všeobecné postupy, shell, git, bezpečnosť, tvoje preferencie.
+   Pri pochybnosti medzi inštinktom a skillom skill; medzi projektom a globálnym projekt.
    Pri každom automatickom inštinkte zhodnoť, či dáva zmysel – Haiku sa mýli; zlé navrhni zamietnuť.
 
 3. **Rozhodnutie** – opýtaj sa: ktoré schváliť, ktoré upraviť, ktoré zamietnuť, prípadne zmeniť rozsah.
@@ -58,6 +77,10 @@ Až schválením sa stanú trvalými a platia všade.
    <čo robiť, jedna jasná veta; dôvod len všeobecne, bez odkazu na konkrétnu session>
    ```
 
+   - **Tematický skill:** poučenie dopíš ako jednu odrážku do sekcie `## Poučenia` v jeho `SKILL.md`
+     (bez frontmatteru inštinktu; „keď … → urob …, lebo …“). Nový skill založ s frontmatterom `name` a
+     `description`. Globálny skill commitni v `claude-setup` ako pri globálnych inštinktoch nižšie
+     (a zvýš verziu pluginu), projektový spolu s projektom.
    - **Projekt:** zapíš do `<koreň projektu>/.claude/instincts/`. Commit spolu s ostatnými zmenami
      alebo samostatne (`chore: add learned instincts`) – podľa brány 2, hneď po schválení inštinktov.
    - **Globálne:** potrebuješ lokálnu kópiu repa `claude-setup`:
